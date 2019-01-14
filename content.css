@@ -1,0 +1,85 @@
+.catalog.catalog_table .context-flyer {
+    display: none;
+}
+
+.EAMenu {
+    position: fixed;
+    right: -175px;
+    top: 200px;
+    z-index: 99;
+    font-size: 20px;
+    background-color: #efefef;
+    padding-left: 3px;
+    border: black solid 1px;
+    border-right: none;
+    transition: right 0.5s;
+}
+
+.EAMenu:hover {
+    right: 0;
+}
+
+.EAButton {
+    position: absolute;
+    right: 0;
+    font-size: 32px;
+    z-index: 1;
+}
+
+.EAButton.EAClose {
+    font-size: 33px;
+    right: 10px;
+}
+
+.EABlockedMess .EAButton.EAClose {
+    font-size: 25px;
+    right: 14px;
+}
+
+.EANewMess {
+    background-color: #82ffb4 !important;
+}
+
+.EABlockedMess {
+    background-color: burlywood !important;
+}
+
+.EAHiddenMess {
+    display: none;
+}
+
+.buttonShowHidden, .buttonStartMonitoring, .EAButton {
+    cursor: pointer;
+}
+
+.buttonShowHidden {
+    padding-left: 10px;
+}
+
+.buttonShowHidden.BSHPushed {
+    padding-left: 10px;
+    background-color: #82ffb4;
+}
+
+.buttonStartMonitoring {
+    padding-left: 10px;
+    padding-right: 10px;
+    border-bottom: black solid 1px;
+}
+
+.buttonStartMonitoring.isActive {
+    padding-left: 10px;
+    padding-right: 10px;
+    border-bottom: black solid 1px;
+    background-color: #82ffb4;
+}
+
+.buttonArrows {
+    background-color: #efefef;
+    padding: 14px 2px 17px 2px;
+    top: -1px;
+    left: -14px;
+    position: absolute;
+    border: black solid 1px;
+    border-radius: 6px 0 0 6px;
+}
