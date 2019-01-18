@@ -29,11 +29,13 @@
 .EAButton.EAClose {
     font-size: 33px;
     right: 10px;
+    top: 37px;
 }
 
 .EABlockedMess .EAButton.EAClose {
     font-size: 25px;
     right: 14px;
+    top: 37px;
 }
 
 .EANewMess {
@@ -45,7 +47,7 @@
 }
 
 .EAHiddenMess {
-    display: none;
+    display: none !important;
 }
 
 .buttonShowHidden, .buttonStartMonitoring, .EAButton {
