@@ -9,15 +9,15 @@ let catalog,
     boxWithOk = "🆗",
     chromeStorage = chrome.storage.local,
     timerID;
-let buttonArrows = $('<div class="buttonArrows">&#8644;</div>').click(buttonArrowsHandler);
-let buttonClose = $("<span class='EAButton EAClose'>☒</span>").click(buttonCloseHandler);
+let buttonArrows = $('<div class="buttonArrows">&#8644;</div>').on('click', buttonArrowsHandler);
+let buttonClose = $("<span class='EAButton EAClose'>☒</span>").on('click', buttonCloseHandler);
 let menu = $("<div class='EAMenu'></div>");
-let buttonShowHidden = $("<p class='buttonShowHidden'>Показать скрытые</p>").click(buttonShowHiddenHandler);
+let buttonShowHidden = $("<p class='buttonShowHidden'>Показать скрытые</p>").on('click', buttonShowHiddenHandler);
 let buttonStartMonitoring = $("<p class='buttonStartMonitoring' " +
     "title='Эта страница будет обновляться каждые 30 секунд, " +
     "до тех пор пока не будет найдено новое объявление, " +
     "после чего будет проиграна мелодия'>Наблюдение</p>")
-    .click(buttonStartMonitoringHandler);
+    .on('click', buttonStartMonitoringHandler);
 
 initStorage();
 settings();
@@ -65,7 +65,7 @@ function monitoring() {
         else {
             buttonStartMonitoring.addClass('isActive');
             timerID = setTimeout(function () {
-                location.reload(true)
+                location.reload()
             }, 30000)
         }
     }
@@ -74,7 +74,7 @@ function monitoring() {
 function alarmUser() {
     let myAudio = new Audio();
     myAudio.src = chrome.runtime.getURL("melody.mp3");
-    myAudio.play();
+    myAudio.play().finally();
 }
 
 function settings() {
@@ -198,7 +198,7 @@ function writeToSettings(mode) {
     function write(EAStorage) {
         chromeStorage.set({'EAStorage': EAStorage}, function () {
             if (mode === 'monitoring') {
-                location.reload(true);
+                location.reload();
             }
         })
     }
