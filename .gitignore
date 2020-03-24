@@ -1,6 +1,7 @@
 # Default ignored files
 /workspace.xml
-
+node_modules/**
+production/**
 
 
 # Covers JetBrains IDEs: IntelliJ, RubyMine, PhpStorm, AppCode, PyCharm, CLion, Android Studio and WebStorm

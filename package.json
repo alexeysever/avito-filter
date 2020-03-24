@@ -1,0 +1,32 @@
+{
+  "name": "avito_filter",
+  "version": "1.0.2",
+  "description": "Это расширение для Google Chrome. Оно позволяет фильтровать уже просмотренные или ненужные объявления и сообщать о новых на сайте объявлений avito.ru",
+  "main": "content.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "webpack prod": "webpack --env.testBuild=false --env.production",
+    "extension reloader": "NODE_ENV=development webpack --env.testBuild=false --mode=development --watch "
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/alexeysever/avito-filter.git"
+  },
+  "author": "Alexey Popov",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/alexeysever/avito-filter/issues"
+  },
+  "homepage": "https://github.com/alexeysever/avito-filter#readme",
+  "dependencies": {},
+  "devDependencies": {
+    "@babel/core": "latest",
+    "@babel/preset-env": "latest",
+    "babel-loader": "^8.0.6",
+    "copy-webpack-plugin": "^5.1.1",
+    "terser-webpack-plugin": "latest",
+    "webpack": "latest",
+    "webpack-cli": "^3.3.11",
+    "webpack-extension-reloader": "^1.1.4"
+  }
+}

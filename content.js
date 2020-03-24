@@ -22,6 +22,8 @@ let buttonStartMonitoring = $("<p class='buttonStartMonitoring' " +
 initStorage();
 settings();
 
+console.log(111111111);
+
 window.onload = function () {
     let map = $('.cols.b-select-city');
     if (map.length < 1) {
