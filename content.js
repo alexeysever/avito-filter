@@ -102,23 +102,38 @@ function findAd() {
     catalog = $(".catalog.catalog_table");
     ads = $(".item.item_table");
     let result;
+
     if (ads.length > 0) {
+
         result = true;
+
         ads.each(function (index, item) {
             idArr.push(item.id);
         });
+
     }
     else result = false;
+
     return result;
 }
 
+/**
+ * Добавляет кнопки и меню на страницу.
+ */
 function addButtons() {
+    // кнопки в объявлениях
     ads.prepend(buttonClose);
+    // меню
     menu.append(buttonStartMonitoring).append(buttonShowHidden).append(buttonArrows);
     $('body').append(menu);
 }
 
+/**
+ * Обрабатываем нажатие кнопок "спрятать" и "показать"
+ * @param event
+ */
 function buttonCloseHandler(event) {
+    event.stopPropagation();
     if ($(event.currentTarget).text() === boxWithOk) {
         $(event.currentTarget).text(boxWithX);
         $(event.currentTarget.parentElement).removeClass("EABlockedMess EAHiddenMess");
@@ -132,18 +147,29 @@ function buttonCloseHandler(event) {
 
 }
 
+/**
+ * Записывает состояние для определённого ID в БД. Заблокирован или нет.
+ * @param elem
+ * @param bool
+ */
 function toggleBlockMess(elem, bool) {
+
     chromeStorage.get('EAStorage', function (result) {
+
         let EAStorage = result.EAStorage;
         let id = EAStorage.id;
         id[elem.id] = {
             block: bool
         };
+
         write(EAStorage)
+
     });
+
     function write(EAStorage) {
         chromeStorage.set({'EAStorage': EAStorage})
     }
+
 }
 
 function writeNewIdInBD(newArrID) {
