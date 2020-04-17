@@ -2,6 +2,7 @@
 /workspace.xml
 node_modules/**
 production/**
+test/
 
 
 # Covers JetBrains IDEs: IntelliJ, RubyMine, PhpStorm, AppCode, PyCharm, CLion, Android Studio and WebStorm

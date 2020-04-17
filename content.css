@@ -23,19 +23,19 @@
     position: absolute;
     right: 0;
     font-size: 32px;
-    z-index: 1;
+    z-index: 99; !important;
 }
 
 .EAButton.EAClose {
     font-size: 33px;
-    right: 10px;
-    top: 37px;
+    right: -28px;
+    top: 4px;
 }
 
 .EABlockedMess .EAButton.EAClose {
-    font-size: 25px;
-    right: 14px;
-    top: 37px;
+    font-size: 30px;
+    right: -28px;
+    top: 1px;
 }
 
 .EANewMess {
