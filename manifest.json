@@ -25,5 +25,10 @@
   ],
   "web_accessible_resources": [
     "melody.mp3"
-  ]
+  ],
+  "background": {
+    "scripts": [
+      "background.js"
+    ]
+  }
 }

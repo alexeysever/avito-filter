@@ -6,7 +6,7 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "webpack prod": "webpack --env.testBuild=false --env.production",
-    "extension reloader": "NODE_ENV=development webpack --env.testBuild=false --mode=development --watch "
+    "extension reloader": "webpack --env.production=false --env.testBuild=false --mode=development --watch"
   },
   "repository": {
     "type": "git",
@@ -22,11 +22,11 @@
   "devDependencies": {
     "@babel/core": "latest",
     "@babel/preset-env": "latest",
-    "babel-loader": "^8.0.6",
-    "copy-webpack-plugin": "^5.1.1",
+    "babel-loader": "latest",
+    "copy-webpack-plugin": "latest",
     "terser-webpack-plugin": "latest",
-    "webpack": "latest",
-    "webpack-cli": "^3.3.11",
-    "webpack-extension-reloader": "^1.1.4"
+    "webpack": "^4.42.1",
+    "webpack-cli": "latest",
+    "webpack-extension-reloader": "latest"
   }
 }

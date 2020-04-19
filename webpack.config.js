@@ -4,7 +4,10 @@ const ExtensionReloader  = require('webpack-extension-reloader');
 const CopyPlugin = require('copy-webpack-plugin');
 
 let dist = './production';
-let entry = {content: './content.js'};
+let entry = {
+    content: './content.js',
+    background: './background.js'
+};
 
 /**
  *
@@ -19,12 +22,13 @@ module.exports = env => {
         entry = './test/goTo.test.js';
     }
     return {
-        target: "web",
+        //target: "web",
         entry: entry,
         output: {
-            filename: 'content.js',
+            filename: '[name].js',
             path: path.resolve(__dirname, dist)
         },
+        watch: true,
         module: {
             rules: [
                 {
@@ -44,13 +48,17 @@ module.exports = env => {
         },
         plugins: [
             new CopyPlugin([
-                { from: "./manifest.json" },
+                {
+                    from: "./manifest.json"
+                },
             ]),
             new ExtensionReloader({
                 port: 9090,
                 reloadPage: true,
+                manifest: path.resolve(__dirname, "manifest.json"),
                 entries: {
-                    content: 'content'
+                    contentScript: 'content',
+                    background: 'background-script'
                 }
             })
         ],
