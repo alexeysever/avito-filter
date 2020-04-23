@@ -3,6 +3,16 @@
 node_modules/**
 production/**
 test/
+/development/background.js
+/development/background.js.map
+/development/content.css
+/development/content.js
+/development/content.js.map
+/development/icon16.png
+/development/icon48.png
+/development/icon128.png
+/development/melody.mp3
+
 
 
 # Covers JetBrains IDEs: IntelliJ, RubyMine, PhpStorm, AppCode, PyCharm, CLion, Android Studio and WebStorm

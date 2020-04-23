@@ -5,8 +5,8 @@
   "main": "content.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "webpack prod": "webpack --env.testBuild=false --env.production",
-    "extension reloader": "webpack --env.production=false --env.testBuild=false --mode=development --watch"
+    "webpack prod": "webpack --config production.config.js --mode=production",
+    "extension reloader": "webpack --config development.config.js --env.production=false --env.testBuild=false --mode=development --watch"
   },
   "repository": {
     "type": "git",
@@ -18,15 +18,20 @@
     "url": "https://github.com/alexeysever/avito-filter/issues"
   },
   "homepage": "https://github.com/alexeysever/avito-filter#readme",
-  "dependencies": {},
+  "dependencies": {
+    "jquery": "^3.5.0"
+  },
   "devDependencies": {
-    "@babel/core": "latest",
-    "@babel/preset-env": "latest",
-    "babel-loader": "latest",
-    "copy-webpack-plugin": "latest",
-    "terser-webpack-plugin": "latest",
+    "@babel/core": "^7.9.0",
+    "@babel/preset-env": "^7.9.5",
+    "babel-loader": "^8.1.0",
+    "copy-webpack-plugin": "^5.1.1",
+    "css-loader": "^3.5.2",
+    "file-loader": "^6.0.0",
+    "style-loader": "^1.1.4",
+    "terser-webpack-plugin": "^2.3.5",
     "webpack": "^4.42.1",
-    "webpack-cli": "latest",
-    "webpack-extension-reloader": "latest"
+    "webpack-cli": "^3.3.11",
+    "webpack-extension-reloader": "^1.1.4"
   }
 }

@@ -17,10 +17,6 @@ let entry = {
  * @returns {{output: {path: string, filename: string}, mode: string, devtool: *, entry: {content: string}, optimization: {minimize: boolean, minimizer: [TerserPlugin]}, plugins: [*], module: {rules: [{test: RegExp, use: {loader: string}, exclude: RegExp}, {test: RegExp, use: [string]}]}, target: string}}
  */
 module.exports = env => {
-    if (env.testBuild === true) {
-        dist = './test-dist/';
-        entry = './test/goTo.test.js';
-    }
     return {
         target: "web",
         entry: entry,
