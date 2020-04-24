@@ -1,6 +1,8 @@
+import $ from 'jquery'
+import './content.css';
+
 let catalog,
     ads,
-    EAStorage,
     mode,
     newID = [],
     blockedMess = [],

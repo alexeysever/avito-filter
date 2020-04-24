@@ -5,8 +5,8 @@
   "main": "content.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "webpack prod": "webpack --config production.config.js --mode=production",
-    "extension reloader": "webpack --config development.config.js --env.production=false --env.testBuild=false --mode=development --watch"
+    "webpack prod": "webpack --config wp.production.config.js --mode=production",
+    "extension reloader": "webpack --config wp.development.config.js --env.production=false --env.testBuild=false --mode=development --watch"
   },
   "repository": {
     "type": "git",
