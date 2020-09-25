@@ -4,7 +4,7 @@
   "description": "Это расширение для Google Chrome. Оно позволяет фильтровать уже просмотренные или ненужные объявления и сообщать о новых на сайте объявлений avito.ru",
   "main": "content.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
+    "test": "node ./test/puppeteerTest.js",
     "webpack prod": "webpack --config wp.production.config.js --mode=production",
     "extension reloader": "webpack --config wp.development.config.js --env.production=false --env.testBuild=false --mode=development --watch"
   },

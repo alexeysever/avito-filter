@@ -2,9 +2,11 @@
 <project version="4">
   <component name="JavaScriptLibraryMappings">
     <file url="file://$PROJECT_DIR$/content.js" libraries="{AvitoE/node_modules, HTML, Node.js Core}" />
+    <file url="file://$PROJECT_DIR$/test/puppeteerTest.js" libraries="{AvitoE/node_modules, Node.js Core}" />
     <file url="file://$PROJECT_DIR$/wp.config.js" libraries="{@types/webpack, Node.js Core}" />
     <file url="file://$PROJECT_DIR$/wp.development.config.js" libraries="{AvitoE/node_modules}" />
     <file url="file://$PROJECT_DIR$/wp.production.config.js" libraries="{AvitoE/node_modules}" />
+    <file url="file://$PROJECT_DIR$/wp.test.config.js" libraries="{Node.js Core}" />
     <file url="PROJECT" libraries="{@types/chrome}" />
   </component>
 </project>

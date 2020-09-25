@@ -21,7 +21,8 @@
   },
   "permissions": [
     "*://www.avito.ru/*",
-    "storage"
+    "storage",
+    "unlimitedStorage"
   ],
   "web_accessible_resources": [
     "melody.mp3"

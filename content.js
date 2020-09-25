@@ -24,38 +24,86 @@ let buttonStartMonitoring = $("<p class='buttonStartMonitoring' " +
 initStorage();
 settings();
 
-window.onload = function () {
+window.onload = start
+
+function start() {
+
     let map = $('.cols.b-select-city');
+
     if (map.length < 1) {
+
         // попытаемся найти объявления
         if (findAd()) {
+
             addButtons();
             findIDInBase ()
+
+            infoOfStorage()
+
         }
-    }
-    else {
 
     }
-};
+
+}
+
+function infoOfStorage() {
+
+    chromeStorage.getBytesInUse(function (bytes) {
+
+        console.log('bytesInUse: ', bytes, 'of', 5242880)
+        console.log(chromeStorage.QUOTA_BYTES)
+
+    })
+
+}
 
 function findIDInBase () {
+
     chrome.storage.local.get('EAStorage', function (result) {
-        let id = result.EAStorage.id;
-        let arrId = result.EAStorage.arrID;
+
+        /**
+         * @name storage_ids_object
+         * @type {Object}
+         */
+        let storage_ids_object = result.EAStorage.id;
+
+        /**
+         * @name storage_ids_arr
+         * @type {Array}
+         */
+        let storage_ids_arr = result.EAStorage.arrID;
+
         idArr.forEach(function (item) {
-            if (item in id) {
-                if (id[item].block === true) {
+
+            // Если такой id уже есть в БД
+            /**
+             * @name item
+             * @type {String}
+             */
+            if (item in storage_ids_object) {
+
+                // Если настройка "заблокирован" установленна в true у этого id
+                if (storage_ids_object[item].block === true) {
                     blockedMess.push(item);
                 }
+
             }
-            if (arrId.indexOf(item) === -1) {
-                arrId.push(item);
+
+            // Если такого id нет в БД
+            if (storage_ids_arr.indexOf(item) === -1) {
+
+                storage_ids_arr.push(item);
                 newID.push(item);
+
             }
+
         });
-        writeNewIdInBD(arrId);
+
+        writeNewIdInBD(storage_ids_arr);
         hideBlockedMess(blockedMess);
+
     })
+
 }
 
 function monitoring() {
@@ -101,9 +149,11 @@ function hideBlockedMess(arr) {
 }
 
 function findAd() {
+
+    let result = false;
+
     catalog = $(".catalog.catalog_table");
     ads = $(".item.item_table");
-    let result;
 
     if (ads.length > 0) {
 
@@ -114,9 +164,9 @@ function findAd() {
         });
 
     }
-    else result = false;
 
     return result;
+
 }
 
 /**
@@ -135,16 +185,22 @@ function addButtons() {
  * @param event
  */
 function buttonCloseHandler(event) {
+
     event.stopPropagation();
+
     if ($(event.currentTarget).text() === boxWithOk) {
+
         $(event.currentTarget).text(boxWithX);
         $(event.currentTarget.parentElement).removeClass("EABlockedMess EAHiddenMess");
         toggleBlockMess(event.currentTarget.parentElement, false)
+
     }
     else {
+
         $(event.currentTarget.parentElement).addClass("EABlockedMess EAHiddenMess");
         $(event.currentTarget).text(boxWithOk);
         toggleBlockMess(event.currentTarget.parentElement, true)
+
     }
 
 }
@@ -160,6 +216,7 @@ function toggleBlockMess(elem, bool) {
 
         let EAStorage = result.EAStorage;
         let id = EAStorage.id;
+
         id[elem.id] = {
             block: bool
         };
@@ -233,17 +290,23 @@ function writeToSettings(mode) {
 }
 
 function initStorage() {
+
     chromeStorage.get("EAStorage", function (result) {
+
         if (result.EAStorage === undefined) {
+
             chromeStorage.set({
                 'EAStorage': {
                     'settings': {
                         'mode': 'nonMonitoring'
                     },
-                    "arrID": [],
+                    'arrID': [],
                     'id': {}
                 }
             });
+
         }
+
     })
+
 }
