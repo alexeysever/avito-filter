@@ -1,30 +1,29 @@
 const path = require('path');
-const TerserPlugin = require('terser-webpack-plugin');
-const ExtensionReloader  = require('webpack-extension-reloader');
-const CopyPlugin = require('copy-webpack-plugin');
+let nodeExternals = require('webpack-node-externals');
 
 let dist = './test-dist';
 let entry = {
-    content: './content.js',
-    background: './background.js'
+    test: './test/puppeteerTest',
 };
 
 /**
  *
- * @param env
- * @param env.production {boolean|"false"}
- * @param env.testBuild {boolean|"false"}
- * @returns {{output: {path: string, filename: string}, mode: string, devtool: *, entry: {content: string}, optimization: {minimize: boolean, minimizer: [TerserPlugin]}, plugins: [*], module: {rules: [{test: RegExp, use: {loader: string}, exclude: RegExp}, {test: RegExp, use: [string]}]}, target: string}}
+ * @returns {{output: {path: string, filename: string}, mode: string, devtool: string, entry: {test: string}, optimization: {minimize: boolean}, module: {rules: [{test: RegExp, use: {loader: string}, exclude: RegExp}, {test: RegExp, use: [string]}, {test: RegExp, loader: string, options: {name: string}}]}, target: string}}
  */
-module.exports = env => {
+module.exports = () => {
     return {
-        target: "web",
+        target: "node",
+        node: {
+            global: false,
+            __filename: false,
+            __dirname: false,
+        },
+        externals: [nodeExternals()],
         entry: entry,
         output: {
             filename: '[name].js',
             path: path.resolve(__dirname, dist)
         },
-        watch: true,
         module: {
             rules: [
                 {
@@ -49,38 +48,10 @@ module.exports = env => {
                 }
             ],
         },
-        plugins: [
-            new CopyPlugin([
-                {
-                    from: 'icon16.png'
-                },
-                {
-                    from: 'icon48.png'
-                },
-                {
-                    from: 'icon128.png'
-                },
-                {
-                    from: 'melody.mp3'
-                }
-            ]),
-            new ExtensionReloader({
-                port: 9090,
-                reloadPage: true,
-                manifest: path.resolve(__dirname, "development/manifest.json"),
-                entries: {
-                    contentScript: 'content',
-                    background: 'background-script'
-                }
-            })
-        ],
-        mode: env.production === true ? 'production' : 'development',
-        devtool: env.production === true ? false : 'source-map',
+        mode: 'development',
+        devtool: 'source-map',
         optimization: {
-            minimize: env.production === true,
-            minimizer: [
-                new TerserPlugin()
-            ]
+            minimize: false,
         }
     }
 };

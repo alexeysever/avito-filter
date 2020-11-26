@@ -1,8 +1,8 @@
 import $ from 'jquery'
-import './content.css';
 
-let catalog,
-    ads,
+let allAds,
+    vipAds,
+    listAds,    // объявления без VIP
     mode,
     newID = [],
     blockedMess = [],
@@ -11,8 +11,8 @@ let catalog,
     boxWithOk = "🆗",
     chromeStorage = chrome.storage.local,
     timerID;
-let buttonArrows = $('<div class="buttonArrows">&#8644;</div>').on('click', buttonArrowsHandler);
-let buttonClose = $("<span class='EAButton EAClose'>☒</span>").on('click', buttonCloseHandler);
+let buttonArrows = $('<div class="buttonArrows">&#8644;</div>')
+let buttonClose = $("<span class='EAButton EAClose'>☒</span>").on('click', buttonCloseOrOkHandler);
 let menu = $("<div class='EAMenu'></div>");
 let buttonShowHidden = $("<p class='buttonShowHidden'>Показать скрытые</p>").on('click', buttonShowHiddenHandler);
 let buttonStartMonitoring = $("<p class='buttonStartMonitoring' " +
@@ -21,12 +21,12 @@ let buttonStartMonitoring = $("<p class='buttonStartMonitoring' " +
     "после чего будет проиграна мелодия'>Наблюдение</p>")
     .on('click', buttonStartMonitoringHandler);
 
-initStorage();
-settings();
+$(start)
 
-window.onload = start
+async function start() {
 
-function start() {
+    await initStorage();
+    settings();
 
     let map = $('.cols.b-select-city');
 
@@ -38,22 +38,9 @@ function start() {
             addButtons();
             findIDInBase ()
 
-            infoOfStorage()
-
         }
 
     }
-
-}
-
-function infoOfStorage() {
-
-    chromeStorage.getBytesInUse(function (bytes) {
-
-        console.log('bytesInUse: ', bytes, 'of', 5242880)
-        console.log(chromeStorage.QUOTA_BYTES)
-
-    })
 
 }
 
@@ -136,13 +123,13 @@ function settings() {
 
 function addColorToNewMess() {
     newID.forEach(function (item) {
-        $(`#${item}`).addClass("EANewMess");
+        $(`[id="${item}"]`).addClass("EANewMess");
     })
 }
 
 function hideBlockedMess(arr) {
     arr.forEach(function (item) {
-        let mainElem = $(`#${item}`);
+        let mainElem = $(`[id="${item}"]`);
         mainElem.addClass("EABlockedMess EAHiddenMess");
         $('.EAButton.EAClose', mainElem).text(boxWithOk);
     })
@@ -152,14 +139,15 @@ function findAd() {
 
     let result = false;
 
-    catalog = $(".catalog.catalog_table");
-    ads = $(".item.item_table");
+    allAds = $('[data-marker="catalog-serp"] [data-marker="item"]');
+    vipAds = $('.serp-vips [data-marker="item"]')
+    listAds = allAds.not(vipAds)
 
-    if (ads.length > 0) {
+    if (allAds.length > 0) {
 
         result = true;
 
-        ads.each(function (index, item) {
+        allAds.each(function (index, item) {
             idArr.push(item.id);
         });
 
@@ -174,7 +162,7 @@ function findAd() {
  */
 function addButtons() {
     // кнопки в объявлениях
-    ads.prepend(buttonClose);
+    listAds.prepend(buttonClose);
     // меню
     menu.append(buttonStartMonitoring).append(buttonShowHidden).append(buttonArrows);
     $('body').append(menu);
@@ -184,20 +172,21 @@ function addButtons() {
  * Обрабатываем нажатие кнопок "спрятать" и "показать"
  * @param event
  */
-function buttonCloseHandler(event) {
+function buttonCloseOrOkHandler(event) {
 
     event.stopPropagation();
 
     if ($(event.currentTarget).text() === boxWithOk) {
 
         $(event.currentTarget).text(boxWithX);
-        $(event.currentTarget.parentElement).removeClass("EABlockedMess EAHiddenMess");
+        let id = event.currentTarget.parentElement.id
+        $(`[id=${id}]`).removeClass("EABlockedMess EAHiddenMess");
         toggleBlockMess(event.currentTarget.parentElement, false)
 
     }
     else {
-
-        $(event.currentTarget.parentElement).addClass("EABlockedMess EAHiddenMess");
+        let id = event.currentTarget.parentElement.id
+        $(`[id=${id}]`).addClass("EABlockedMess EAHiddenMess");
         $(event.currentTarget).text(boxWithOk);
         toggleBlockMess(event.currentTarget.parentElement, true)
 
@@ -270,10 +259,6 @@ function buttonStartMonitoringHandler() {
     }
 }
 
-function buttonArrowsHandler() {
-
-}
-
 function writeToSettings(mode) {
     chromeStorage.get('EAStorage', function (result) {
         let EAStorage = result.EAStorage;
@@ -291,22 +276,30 @@ function writeToSettings(mode) {
 
 function initStorage() {
 
-    chromeStorage.get("EAStorage", function (result) {
+    return new Promise((resolve) => {
 
-        if (result.EAStorage === undefined) {
+        chromeStorage.get("EAStorage", function (result) {
 
-            chromeStorage.set({
-                'EAStorage': {
-                    'settings': {
-                        'mode': 'nonMonitoring'
-                    },
-                    'arrID': [],
-                    'id': {}
-                }
-            });
+            if (result.EAStorage === undefined) {
 
-        }
+                chromeStorage.set({
+                    'EAStorage': {
+                        'settings': {
+                            'mode': 'nonMonitoring'
+                        },
+                        'arrID': [],
+                        'id': {}
+                    }
+                }, function () {resolve()});
+
+            }
+            else {
+                resolve()
+            }
+
+        })
 
     })
+
 
 }

@@ -1,5 +1,5 @@
 const path = require('path');
-const TerserPlugin = require('terser-webpack-plugin');
+const TerserPlugin =    require('terser-webpack-plugin');
 const CopyPlugin = require('copy-webpack-plugin');
 
 let dist = './production';
@@ -13,7 +13,7 @@ let entry = {
  */
 module.exports = () => {
     return {
-        target: "web",
+        //target: "web",
         entry: entry,
         output: {
             filename: '[name].js',

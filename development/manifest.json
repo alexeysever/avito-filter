@@ -3,12 +3,13 @@
 
   "name": "Avito фильтр",
   "description": "Это расширение позволяет фильтровать уже просмотренные или ненужные объявления и сообщать о новых на сайте объявлений avito.ru.",
-  "version": "1.0.3",
+  "version": "1.1.0",
   "content_scripts": [
     {
       "matches": ["*://www.avito.ru/*"],
       "js": ["content.js"],
-      "css": ["content.css"]
+      "css": ["content.css"],
+      "run_at": "document_start"
     }
   ],
   "icons" : {
@@ -26,10 +27,5 @@
   ],
   "web_accessible_resources": [
     "melody.mp3"
-  ],
-  "background": {
-    "scripts": [
-      "background.js"
-    ]
-  }
+  ]
 }
