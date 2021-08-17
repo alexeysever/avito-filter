@@ -2,7 +2,6 @@
 /workspace.xml
 node_modules/**
 production/**
-test/
 development/background.js
 development/background.js.map
 development/content.css

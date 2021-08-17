@@ -8,6 +8,6 @@
     <file url="file://$PROJECT_DIR$/wp.development.extReloader.config.js" libraries="{AvitoE/node_modules}" />
     <file url="file://$PROJECT_DIR$/wp.production.config.js" libraries="{AvitoE/node_modules}" />
     <file url="file://$PROJECT_DIR$/wp.test.config.js" libraries="{Node.js Core}" />
-    <file url="PROJECT" libraries="{@types/chai, @types/chrome, @types/mocha, HTML}" />
+    <file url="PROJECT" libraries="{@types/chai, @types/chrome, @types/mocha, HTML, libs}" />
   </component>
 </project>

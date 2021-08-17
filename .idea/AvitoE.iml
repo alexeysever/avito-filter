@@ -4,6 +4,7 @@
     <content url="file://$MODULE_DIR$">
       <sourceFolder url="file://$MODULE_DIR$/test" isTestSource="true" />
       <excludeFolder url="file://$MODULE_DIR$/.idea/dictionaries" />
+      <excludeFolder url="file://$MODULE_DIR$/.idea/libraries" />
       <excludeFolder url="file://$MODULE_DIR$/.tmp" />
       <excludeFolder url="file://$MODULE_DIR$/dev_ext_reloader" />
       <excludeFolder url="file://$MODULE_DIR$/development" />
@@ -18,5 +19,6 @@
     <orderEntry type="library" name="@types/webpack" level="application" />
     <orderEntry type="library" name="@types/mocha" level="application" />
     <orderEntry type="library" name="@types/chai" level="application" />
+    <orderEntry type="library" name="libs" level="project" />
   </component>
 </module>

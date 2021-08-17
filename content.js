@@ -3,6 +3,7 @@ import $ from 'jquery'
 let allAds,
     vipAds,
     listAds,    // объявления без VIP
+    witcherAds,  // другие объявления
     mode,
     newID = [],
     blockedMess = [],
@@ -141,7 +142,9 @@ function findAd() {
 
     allAds = $('[data-marker="catalog-serp"] [data-marker="item"]');
     vipAds = $('.serp-vips [data-marker="item"]')
-    listAds = allAds.not(vipAds)
+        .add('[class*="items-vip-"] [data-marker="item"]')
+    witcherAds = $('[class*="items-witcher-"] [data-marker="item"]')
+    listAds = allAds.not(vipAds).not(witcherAds)
 
     if (allAds.length > 0) {
 
@@ -300,6 +303,5 @@ function initStorage() {
         })
 
     })
-
 
 }
