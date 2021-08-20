@@ -6,7 +6,6 @@ let mode,
     blockedMess = [],
     boxWithX = '☒',
     boxWithOk = '🆗',
-    chromeStorage = chrome.storage.local,
     timerID;
 let buttonArrows = $('<div class="buttonArrows">&#8644;</div>');
 let buttonClose = $('<span class=\'EAButton EAClose\'>☒</span>').on('click', buttonCloseOrOkHandler);
@@ -24,42 +23,41 @@ $(start);
 async function start() {
 
     await initStorage();
-    //settings();
 
-    _.cond([
+    await _.cond([
         [avito_is, avito_start],
         [olx_is, olx_start]
     ])(window.location.host);
 
 }
 
-function avito_is (host) {
+async function avito_is (host) {
 
-    settings('avito');
+    await settings('avito');
 
     return host.search(/www\.avito\.ru/) > -1;
 
 }
 
-function olx_is (host) {
+async function olx_is (host) {
 
-    settings('olx');
+    await settings('olx');
 
     return host.search(/www\.olx\.ua/) > -1;
 
 }
 
-function avito_start () {
+async function avito_start () {
 
     // Продолжить если это не главная страница.
     if (!$('.cols.b-select-city').length) {
         // Найти все объявления.
-        avito_findAllAds();
+        await avito_findAllAds();
     }
 
 }
 
-function avito_findAllAds () {
+async function avito_findAllAds () {
 
     let allAds = $('[data-marker="catalog-serp"] [data-marker="item"]');
 
@@ -74,7 +72,7 @@ function avito_findAllAds () {
 
     if (listAds.length > 0) {
         addButtons(listAds);
-        findIDInBase(idArr);
+        await findIDInBase(idArr);
     }
 
 }
@@ -83,60 +81,49 @@ function olx_start () {
 
 }
 
-function findIDInBase (idArr) {
+async function findIDInBase (idArr) {
 
-    chrome.storage.local.get('EAStorage', function (result) {
+    let result = await getDataFromStorage('EAStorage');
 
+    let storage_ids_object = result.EAStorage.id;
+    let storage_ids_arr = result.EAStorage.arrID;
+
+    idArr.forEach(function (item) {
+
+        // Если такой id уже есть в БД
         /**
-         * @name storage_ids_object
-         * @type {Object}
+         * @name item
+         * @type {String}
          */
-        let storage_ids_object = result.EAStorage.id;
+        if (item in storage_ids_object) {
 
-        /**
-         * @name storage_ids_arr
-         * @type {Array}
-         */
-        let storage_ids_arr = result.EAStorage.arrID;
-
-        idArr.forEach(function (item) {
-
-            // Если такой id уже есть в БД
-            /**
-             * @name item
-             * @type {String}
-             */
-            if (item in storage_ids_object) {
-
-                // Если настройка "заблокирован" установленна в true у этого id
-                if (storage_ids_object[item].block === true) {
-                    blockedMess.push(item);
-                }
-
+            // Если настройка "заблокирован" установленна в true у этого id
+            if (storage_ids_object[item].block === true) {
+                blockedMess.push(item);
             }
 
-            // Если такого id нет в БД
-            if (storage_ids_arr.indexOf(item) === -1) {
+        }
 
-                storage_ids_arr.push(item);
-                newID.push(item);
+        // Если такого id нет в БД
+        if (storage_ids_arr.indexOf(item) === -1) {
 
-            }
+            storage_ids_arr.push(item);
+            newID.push(item);
 
-        });
-
-        writeNewIdInBD(storage_ids_arr);
-        hideBlockedMess(blockedMess);
+        }
 
     });
 
+    await writeNewIdInBD(storage_ids_arr);
+    hideBlockedMess(blockedMess);
+
 }
 
-function monitoring() {
+async function monitoring() {
     if (mode === 'monitoring') {
         // Если есть новые объявления.
         if ($('.EANewMess').length > 0) {
-            buttonMonitoringToggle();
+            await buttonMonitoringToggle();
             alarmUser();
         }
         else {
@@ -154,22 +141,19 @@ function alarmUser() {
     myAudio.play().finally();
 }
 
-function settings(site) {
+async function settings(site) {
 
-    chromeStorage.get('EAStorage', function (result) {
+    let result = await getDataFromStorage('EAStorage');
+    let EAStorage;
 
-        let EAStorage;
+    if (site === 'avito') {
+        EAStorage = result.EAStorage;
+    }
+    else if (site === 'olx') {
+        EAStorage = result.EAStorage.olx;
+    }
 
-        if (site === 'avito') {
-            EAStorage = result.EAStorage;
-        }
-        else if (site === 'olx') {
-            EAStorage = result.EAStorage.olx;
-        }
-
-        mode = EAStorage.settings.mode;
-
-    });
+    mode = EAStorage.settings.mode;
 
 }
 
@@ -204,7 +188,7 @@ function addButtons(listAds) {
  * Обрабатываем нажатие кнопок "спрятать" и "показать"
  * @param event
  */
-function buttonCloseOrOkHandler(event) {
+async function buttonCloseOrOkHandler(event) {
 
     event.stopPropagation();
 
@@ -213,7 +197,7 @@ function buttonCloseOrOkHandler(event) {
         $(event.currentTarget).text(boxWithX);
         let id = event.currentTarget.parentElement.id;
         $(`[id=${id}]`).removeClass('EABlockedMess EAHiddenMess');
-        toggleBlockMess(event.currentTarget.parentElement, false);
+        await toggleBlockMess(event.currentTarget.parentElement, false);
 
     }
     else {
@@ -221,7 +205,7 @@ function buttonCloseOrOkHandler(event) {
         let id = event.currentTarget.parentElement.id;
         $(`[id=${id}]`).addClass('EABlockedMess EAHiddenMess');
         $(event.currentTarget).text(boxWithOk);
-        toggleBlockMess(event.currentTarget.parentElement, true);
+        await toggleBlockMess(event.currentTarget.parentElement, true);
 
     }
 
@@ -232,39 +216,30 @@ function buttonCloseOrOkHandler(event) {
  * @param elem
  * @param bool
  */
-function toggleBlockMess(elem, bool) {
+async function toggleBlockMess(elem, bool) {
 
-    chromeStorage.get('EAStorage', function (result) {
+    let EAStorage = (await getDataFromStorage('EAStorage')).EAStorage;
 
-        let EAStorage = result.EAStorage;
-        let id = EAStorage.id;
+    let id = EAStorage.id;
 
-        id[elem.id] = {
-            block: bool
-        };
+    id[elem.id] = {
+        block: bool
+    };
 
-        write(EAStorage);
-
-    });
-
-    function write(EAStorage) {
-        chromeStorage.set({'EAStorage': EAStorage}).finally();
-    }
+    await setDataToStorage({'EAStorage': EAStorage});
 
 }
 
-function writeNewIdInBD(newArrID) {
-    chromeStorage.get('EAStorage', function (result) {
-        let EAStorage = result.EAStorage;
-        EAStorage.arrID = newArrID;
-        write(EAStorage);
-    });
-    function write(EAStorage) {
-        chromeStorage.set({'EAStorage': EAStorage}, function () {
-            addColorToNewMess();
-            monitoring();
-        });
-    }
+async function writeNewIdInBD(newArrID) {
+
+    let EAStorage = (await getDataFromStorage('EAStorage')).EAStorage;
+
+    EAStorage.arrID = newArrID;
+
+    await setDataToStorage({'EAStorage': EAStorage});
+    addColorToNewMess();
+    await monitoring();
+
 }
 
 function buttonShowHiddenHandler(event) {
@@ -278,72 +253,92 @@ function buttonShowHiddenHandler(event) {
     }
 }
 
-function buttonMonitoringToggle() {
+async function buttonMonitoringToggle() {
     if (mode === 'nonMonitoring') {
         mode = 'monitoring';
-        writeToSettings(mode);
+        await writeModeToSettings(mode);
         buttonMonitoring.addClass('isActive');
     }
     else {
         mode = 'nonMonitoring';
         clearTimeout(timerID);
-        writeToSettings(mode);
+        await writeModeToSettings(mode);
         buttonMonitoring.removeClass('isActive');
     }
 }
 
-function writeToSettings(mode) {
-    chromeStorage.get('EAStorage', function (result) {
-        let EAStorage = result.EAStorage;
-        EAStorage.settings.mode = mode;
-        write(EAStorage);
-    });
-    function write(EAStorage) {
-        chromeStorage.set({'EAStorage': EAStorage}, function () {
-            if (mode === 'monitoring') {
-                location.reload();
-            }
-        });
+async function writeModeToSettings(mode) {
+
+    let EAStorage = (await getDataFromStorage('EAStorage')).EAStorage;
+
+    EAStorage.settings.mode = mode;
+
+    await setDataToStorage({'EAStorage': EAStorage});
+
+    if (mode === 'monitoring') {
+        location.reload();
     }
+
 }
 
-function initStorage() {
+function getDataFromStorage (key, path = null) {
 
-    return new Promise((resolve) => {
+    return new Promise(resolve =>  {
 
-        chromeStorage.get('EAStorage', function (result) {
+        chrome.storage.local.get(key, function (result) {
 
-            if (result.EAStorage === undefined) {
+            let value = result;
 
-                chromeStorage.set({
-                    'EAStorage': {
-
-                        // Olx
-                        'olx': {
-                            'arrID': [],
-                            'id': {},
-                            'settings': {
-                                'mode': 'nonMonitoring'
-                            },
-                        },
-
-                        // Avito
-                        'settings': {
-                            'mode': 'nonMonitoring'
-                        },
-                        'arrID': [],
-                        'id': {}
-
-                    }
-                }, function () {resolve();});
-
+            if (path){
+                value = result[key][path];
             }
-            else {
-                resolve();
-            }
+
+            resolve(value);
 
         });
 
     });
+
+}
+
+function setDataToStorage (data) {
+
+    return new Promise((resolve) => {
+        // noinspection JSCheckFunctionSignatures
+        chrome.storage.local.set(data, resolve);
+    });
+
+}
+
+async function initStorage() {
+
+    let result = await getDataFromStorage('EAStorage');
+
+    if (result.EAStorage === undefined) {
+
+        // noinspection JSCheckFunctionSignatures
+        await setDataToStorage({
+            'EAStorage': {
+
+                // Olx
+                'olx': {
+                    'arrID': [],
+                    'id': {},
+                    'settings': {
+                        'mode': 'nonMonitoring'
+                    },
+                },
+
+                // Avito
+                'settings': {
+                    'mode': 'nonMonitoring'
+                },
+                'arrID': [],
+                'id': {}
+
+            }
+        });
+
+    }
 
 }

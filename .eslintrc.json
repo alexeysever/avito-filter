@@ -8,7 +8,8 @@
     "padding-line-between-statements": [
       "warn",
       { "blankLine": "always", "prev": "*", "next": "return" }
-    ]
+    ],
+    "no-unused-vars": "warn"
   },
   "env": {
     "es6": true,
