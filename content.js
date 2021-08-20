@@ -1,51 +1,89 @@
-import $ from 'jquery'
+import $ from 'jquery';
+import _ from 'lodash';
 
-let allAds,
-    vipAds,
-    listAds,    // объявления без VIP
-    witcherAds,  // другие объявления
-    mode,
+let mode,
     newID = [],
     blockedMess = [],
-    idArr = [],
-    boxWithX = "☒",
-    boxWithOk = "🆗",
+    boxWithX = '☒',
+    boxWithOk = '🆗',
     chromeStorage = chrome.storage.local,
     timerID;
-let buttonArrows = $('<div class="buttonArrows">&#8644;</div>')
-let buttonClose = $("<span class='EAButton EAClose'>☒</span>").on('click', buttonCloseOrOkHandler);
-let menu = $("<div class='EAMenu'></div>");
-let buttonShowHidden = $("<p class='buttonShowHidden'>Показать скрытые</p>").on('click', buttonShowHiddenHandler);
-let buttonStartMonitoring = $("<p class='buttonStartMonitoring' " +
-    "title='Эта страница будет обновляться каждые 30 секунд, " +
-    "до тех пор пока не будет найдено новое объявление, " +
-    "после чего будет проиграна мелодия'>Наблюдение</p>")
-    .on('click', buttonStartMonitoringHandler);
+let buttonArrows = $('<div class="buttonArrows">&#8644;</div>');
+let buttonClose = $('<span class=\'EAButton EAClose\'>☒</span>').on('click', buttonCloseOrOkHandler);
+let menu = $('<div class=\'EAMenu\'></div>');
+let buttonShowHidden = $('<p class=\'buttonShowHidden\'>Показать скрытые</p>').on('click', buttonShowHiddenHandler);
+let buttonMonitoring = $('<p class=\'buttonStartMonitoring\' ' +
+    'title=\'Эта страница будет обновляться каждые 30 секунд, ' +
+    'до тех пор пока не будет найдено новое объявление, ' +
+    'после чего будет проиграна мелодия\'>Наблюдение</p>')
+    .on('click', buttonMonitoringToggle);
 
-$(start)
+// start выполнится после завершения построения DOM.
+$(start);
 
 async function start() {
 
     await initStorage();
-    settings();
+    //settings();
 
-    let map = $('.cols.b-select-city');
+    _.cond([
+        [avito_is, avito_start],
+        [olx_is, olx_start]
+    ])(window.location.host);
 
-    if (map.length < 1) {
+}
 
-        // попытаемся найти объявления
-        if (findAd()) {
+function avito_is (host) {
 
-            addButtons();
-            findIDInBase ()
+    settings('avito');
 
-        }
+    return host.search(/www\.avito\.ru/) > -1;
 
+}
+
+function olx_is (host) {
+
+    settings('olx');
+
+    return host.search(/www\.olx\.ua/) > -1;
+
+}
+
+function avito_start () {
+
+    // Продолжить если это не главная страница.
+    if (!$('.cols.b-select-city').length) {
+        // Найти все объявления.
+        avito_findAllAds();
     }
 
 }
 
-function findIDInBase () {
+function avito_findAllAds () {
+
+    let allAds = $('[data-marker="catalog-serp"] [data-marker="item"]');
+
+    // Тут происходит преобразование набора элементов в массив с набором id.
+    let idArr = allAds.map(function () {
+        return this.id;
+    }).get();
+
+    let vipAds = $('.serp-vips [data-marker="item"]').add('[class*="items-vip-"] [data-marker="item"]');
+    let witcherAds = $('[class*="items-witcher-"] [data-marker="item"]');
+    let listAds = allAds.not(vipAds).not(witcherAds);
+
+    if (listAds.length > 0) {
+        addButtons(listAds);
+        findIDInBase(idArr);
+    }
+
+}
+
+function olx_start () {
+
+}
+
+function findIDInBase (idArr) {
 
     chrome.storage.local.get('EAStorage', function (result) {
 
@@ -90,85 +128,76 @@ function findIDInBase () {
         writeNewIdInBD(storage_ids_arr);
         hideBlockedMess(blockedMess);
 
-    })
+    });
 
 }
 
 function monitoring() {
     if (mode === 'monitoring') {
-        if ($(".EANewMess").length > 0) {
-            buttonStartMonitoringHandler();
-            alarmUser()
+        // Если есть новые объявления.
+        if ($('.EANewMess').length > 0) {
+            buttonMonitoringToggle();
+            alarmUser();
         }
         else {
-            buttonStartMonitoring.addClass('isActive');
+            buttonMonitoring.addClass('isActive');
             timerID = setTimeout(function () {
-                location.reload()
-            }, 30000)
+                location.reload();
+            }, 30000);
         }
     }
 }
 
 function alarmUser() {
     let myAudio = new Audio();
-    myAudio.src = chrome.runtime.getURL("melody.mp3");
+    myAudio.src = chrome.runtime.getURL('melody.mp3');
     myAudio.play().finally();
 }
 
-function settings() {
+function settings(site) {
+
     chromeStorage.get('EAStorage', function (result) {
-        let EAStorage = result.EAStorage;
+
+        let EAStorage;
+
+        if (site === 'avito') {
+            EAStorage = result.EAStorage;
+        }
+        else if (site === 'olx') {
+            EAStorage = result.EAStorage.olx;
+        }
+
         mode = EAStorage.settings.mode;
+
     });
+
 }
 
 function addColorToNewMess() {
     newID.forEach(function (item) {
-        $(`[id="${item}"]`).addClass("EANewMess");
-    })
+        $(`[id="${item}"]`).addClass('EANewMess');
+    });
 }
 
 function hideBlockedMess(arr) {
     arr.forEach(function (item) {
         let mainElem = $(`[id="${item}"]`);
-        mainElem.addClass("EABlockedMess EAHiddenMess");
+        mainElem.addClass('EABlockedMess EAHiddenMess');
         $('.EAButton.EAClose', mainElem).text(boxWithOk);
-    })
-}
-
-function findAd() {
-
-    let result = false;
-
-    allAds = $('[data-marker="catalog-serp"] [data-marker="item"]');
-    vipAds = $('.serp-vips [data-marker="item"]')
-        .add('[class*="items-vip-"] [data-marker="item"]')
-    witcherAds = $('[class*="items-witcher-"] [data-marker="item"]')
-    listAds = allAds.not(vipAds).not(witcherAds)
-
-    if (allAds.length > 0) {
-
-        result = true;
-
-        allAds.each(function (index, item) {
-            idArr.push(item.id);
-        });
-
-    }
-
-    return result;
-
+    });
 }
 
 /**
  * Добавляет кнопки и меню на страницу.
  */
-function addButtons() {
+function addButtons(listAds) {
+
     // кнопки в объявлениях
     listAds.prepend(buttonClose);
     // меню
-    menu.append(buttonStartMonitoring).append(buttonShowHidden).append(buttonArrows);
+    menu.append(buttonMonitoring).append(buttonShowHidden).append(buttonArrows);
     $('body').append(menu);
+
 }
 
 /**
@@ -182,16 +211,17 @@ function buttonCloseOrOkHandler(event) {
     if ($(event.currentTarget).text() === boxWithOk) {
 
         $(event.currentTarget).text(boxWithX);
-        let id = event.currentTarget.parentElement.id
-        $(`[id=${id}]`).removeClass("EABlockedMess EAHiddenMess");
-        toggleBlockMess(event.currentTarget.parentElement, false)
+        let id = event.currentTarget.parentElement.id;
+        $(`[id=${id}]`).removeClass('EABlockedMess EAHiddenMess');
+        toggleBlockMess(event.currentTarget.parentElement, false);
 
     }
     else {
-        let id = event.currentTarget.parentElement.id
-        $(`[id=${id}]`).addClass("EABlockedMess EAHiddenMess");
+
+        let id = event.currentTarget.parentElement.id;
+        $(`[id=${id}]`).addClass('EABlockedMess EAHiddenMess');
         $(event.currentTarget).text(boxWithOk);
-        toggleBlockMess(event.currentTarget.parentElement, true)
+        toggleBlockMess(event.currentTarget.parentElement, true);
 
     }
 
@@ -213,12 +243,12 @@ function toggleBlockMess(elem, bool) {
             block: bool
         };
 
-        write(EAStorage)
+        write(EAStorage);
 
     });
 
     function write(EAStorage) {
-        chromeStorage.set({'EAStorage': EAStorage})
+        chromeStorage.set({'EAStorage': EAStorage}).finally();
     }
 
 }
@@ -227,20 +257,20 @@ function writeNewIdInBD(newArrID) {
     chromeStorage.get('EAStorage', function (result) {
         let EAStorage = result.EAStorage;
         EAStorage.arrID = newArrID;
-        write(EAStorage)
+        write(EAStorage);
     });
     function write(EAStorage) {
         chromeStorage.set({'EAStorage': EAStorage}, function () {
             addColorToNewMess();
             monitoring();
-        })
+        });
     }
 }
 
 function buttonShowHiddenHandler(event) {
-    if ($(event.currentTarget).hasClass("BSHPushed")) {
+    if ($(event.currentTarget).hasClass('BSHPushed')) {
         $(event.currentTarget).removeClass('BSHPushed');
-        $('.EABlockedMess').addClass('EAHiddenMess')
+        $('.EABlockedMess').addClass('EAHiddenMess');
     }
     else {
         $('.EAHiddenMess').removeClass('EAHiddenMess');
@@ -248,17 +278,17 @@ function buttonShowHiddenHandler(event) {
     }
 }
 
-function buttonStartMonitoringHandler() {
+function buttonMonitoringToggle() {
     if (mode === 'nonMonitoring') {
-        mode = "monitoring";
+        mode = 'monitoring';
         writeToSettings(mode);
-        buttonStartMonitoring.addClass('isActive')
+        buttonMonitoring.addClass('isActive');
     }
     else {
-        mode = "nonMonitoring";
+        mode = 'nonMonitoring';
         clearTimeout(timerID);
         writeToSettings(mode);
-        buttonStartMonitoring.removeClass('isActive')
+        buttonMonitoring.removeClass('isActive');
     }
 }
 
@@ -266,14 +296,14 @@ function writeToSettings(mode) {
     chromeStorage.get('EAStorage', function (result) {
         let EAStorage = result.EAStorage;
         EAStorage.settings.mode = mode;
-        write(EAStorage)
+        write(EAStorage);
     });
     function write(EAStorage) {
         chromeStorage.set({'EAStorage': EAStorage}, function () {
             if (mode === 'monitoring') {
                 location.reload();
             }
-        })
+        });
     }
 }
 
@@ -281,27 +311,39 @@ function initStorage() {
 
     return new Promise((resolve) => {
 
-        chromeStorage.get("EAStorage", function (result) {
+        chromeStorage.get('EAStorage', function (result) {
 
             if (result.EAStorage === undefined) {
 
                 chromeStorage.set({
                     'EAStorage': {
+
+                        // Olx
+                        'olx': {
+                            'arrID': [],
+                            'id': {},
+                            'settings': {
+                                'mode': 'nonMonitoring'
+                            },
+                        },
+
+                        // Avito
                         'settings': {
                             'mode': 'nonMonitoring'
                         },
                         'arrID': [],
                         'id': {}
+
                     }
-                }, function () {resolve()});
+                }, function () {resolve();});
 
             }
             else {
-                resolve()
+                resolve();
             }
 
-        })
+        });
 
-    })
+    });
 
 }

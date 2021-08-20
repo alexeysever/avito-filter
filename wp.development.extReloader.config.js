@@ -1,5 +1,4 @@
 const path = require('path');
-const TerserPlugin = require('terser-webpack-plugin');
 const ExtensionReloader  = require('webpack-extension-reloader');
 const CopyPlugin = require('copy-webpack-plugin');
 
@@ -11,14 +10,11 @@ let entry = {
 
 /**
  *
- * @param env
- * @param env.production {boolean|"false"}
- * @param env.testBuild {boolean|"false"}
- * @returns {{output: {path: string, filename: string}, mode: string, devtool: *, entry: {content: string}, optimization: {minimize: boolean, minimizer: [TerserPlugin]}, plugins: [*], module: {rules: [{test: RegExp, use: {loader: string}, exclude: RegExp}, {test: RegExp, use: [string]}]}, target: string}}
+ * @returns {{output: {path: string, filename: string}, mode: string, devtool: string, entry: {background: string, content: string}, watch: boolean, optimization: {minimize: boolean}, plugins: *[], module: {rules: [{test: RegExp, use: {loader: string}, exclude: RegExp}, {test: RegExp, use: string[]}, {test: RegExp, loader: string, options: {name: string}}]}, target: string}}
  */
-module.exports = env => {
+module.exports = () => {
     return {
-        target: "web",
+        target: 'web',
         entry: entry,
         output: {
             filename: '[name].js',
@@ -62,12 +58,15 @@ module.exports = env => {
                 },
                 {
                     from: 'melody.mp3'
+                },
+                {
+                    from: 'content.css'
                 }
             ]),
             new ExtensionReloader({
                 port: 9090,
                 reloadPage: true,
-                manifest: path.resolve(__dirname, "dev_ext_reloader/manifest.json"),
+                manifest: path.resolve(__dirname, 'dev_ext_reloader/manifest.json'),
                 entries: {
                     contentScript: 'content',
                     background: 'background-script'
@@ -79,5 +78,5 @@ module.exports = env => {
         optimization: {
             minimize: false
         }
-    }
+    };
 };

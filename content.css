@@ -29,7 +29,7 @@
 .EAButton.EAClose {
     font-size: 33px;
     right: -28px;
-    top: 4px;
+    top: -12px;
 }
 
 .EABlockedMess .EAButton.EAClose {

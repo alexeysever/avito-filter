@@ -21,8 +21,9 @@ module.exports = env => {
         dist = './test-dist/';
         entry = './test/goTo.test.js';
     }
+
     return {
-        target: "web",
+        target: 'web',
         entry: entry,
         output: {
             filename: '[name].js',
@@ -71,7 +72,7 @@ module.exports = env => {
             new ExtensionReloader({
                 port: 9090,
                 reloadPage: true,
-                manifest: path.resolve(__dirname, "development/manifest.json"),
+                manifest: path.resolve(__dirname, 'development/manifest.json'),
                 entries: {
                     contentScript: 'content',
                     background: 'background-script'
@@ -86,5 +87,5 @@ module.exports = env => {
                 new TerserPlugin()
             ]
         }
-    }
+    };
 };

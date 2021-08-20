@@ -20,7 +20,8 @@
   },
   "homepage": "https://github.com/alexeysever/avito-filter#readme",
   "dependencies": {
-    "jquery": "^3.5.1"
+    "jquery": "^3.5.1",
+    "lodash": "^4.17.21"
   },
   "devDependencies": {
     "@babel/core": "^7.12.3",
@@ -30,6 +31,7 @@
     "copy-webpack-plugin": "^5.1.2",
     "css-loader": "^3.6.0",
     "file-loader": "^6.2.0",
+    "mocha": "^8.2.1",
     "puppeteer": "5.5.0",
     "style-loader": "^1.3.0",
     "terser-webpack-plugin": "^2.3.8",
@@ -37,6 +39,6 @@
     "webpack-cli": "^3.3.12",
     "webpack-extension-reloader": "^1.1.4",
     "webpack-node-externals": "^2.5.2",
-    "mocha": "^8.2.1"
+    "eslint": "^7.32.0"
   }
 }

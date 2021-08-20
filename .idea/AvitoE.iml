@@ -20,5 +20,6 @@
     <orderEntry type="library" name="@types/mocha" level="application" />
     <orderEntry type="library" name="@types/chai" level="application" />
     <orderEntry type="library" name="libs" level="project" />
+    <orderEntry type="library" name="@types/chrome" level="application" />
   </component>
 </module>
