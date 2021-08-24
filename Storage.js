@@ -1,21 +1,22 @@
 export default class Extension_storage {
 
-    constructor() {
-        this.siteName = null;
+    constructor(siteName) {
         this.storageInitialised = false;
+        this.siteName = siteName;
+        this.EAStorage = null;
+        this.writed = true;
+
     }
 
-    async initStorage(siteName) {
-
-        this.siteName = siteName;
+    async initStorage() {
 
         if (this.storageInitialised) {
             return;
         }
 
-        let result = await this.getDataFromStorage('EAStorage');
+        let result = await this.getDataFromStorage();
 
-        if (result.EAStorage === undefined) {
+        if (result === undefined) {
 
             // noinspection JSCheckFunctionSignatures
             await this.setDataToStorage({
@@ -43,10 +44,10 @@ export default class Extension_storage {
             });
 
         }
-        else if (result.EAStorage.olx === undefined) {
+        else if (result.olx === undefined) {
             await this.initOlx(result);
         }
-        else if (!result.EAStorage.avito && result.EAStorage.arrID) {
+        else if (!result.avito && result.arrID) {
             await this.removeOldAvitoSettings(result);
         }
 
@@ -56,25 +57,25 @@ export default class Extension_storage {
 
     async removeOldAvitoSettings(result) {
 
-        result.EAStorage.avito = {
-            arrID: result.EAStorage.arrID,
-            id: result.EAStorage.id,
-            settings: result.EAStorage.settings
+        result.avito = {
+            arrID: result.arrID,
+            id: result.id,
+            settings: result.settings
         };
 
-        delete result.EAStorage.arrID;
-        delete result.EAStorage.id;
-        delete result.EAStorage.settings;
+        delete result.arrID;
+        delete result.id;
+        delete result.settings;
 
         await this.setDataToStorage({
-            'EAStorage': result.EAStorage
+            'EAStorage': result
         });
 
     }
 
     async initOlx(result) {
 
-        result.EAStorage.olx = {
+        result.olx = {
             'arrID': [],
             'id': {},
             'settings': {
@@ -83,36 +84,114 @@ export default class Extension_storage {
         };
 
         await this.setDataToStorage({
-            'EAStorage': result.EAStorage
+            'EAStorage': result
         });
 
     }
 
-    getDataFromStorage(key, path = null) {
+    getDataFromStorage(key1 = null, key2 = null) {
 
-        return new Promise(resolve => {
+        let that = this;
 
-            chrome.storage.local.get(key, function (result) {
+        if (this.writed) {
 
-                let value = result;
+            return new Promise(resolve => {
 
-                if (path) {
-                    value = result[key][path];
-                }
+                chrome.storage.local.get('EAStorage', function (result) {
 
-                resolve(value);
+                    that.EAStorage = result.EAStorage;
+                    let value = result.EAStorage;
+
+                    if (key1) {
+                        value = value[key1];
+                    }
+                    if (key2) {
+                        value = value[key2];
+                    }
+
+                    that.writed = false;
+
+                    resolve(value);
+
+                });
 
             });
 
-        });
+        }
+        else {
+
+            let value = this.EAStorage;
+
+            if (key1) {
+                value = value[key1];
+            }
+            if (key2) {
+                value = value[key2];
+            }
+
+            return value;
+
+        }
 
     }
 
     setDataToStorage(data) {
 
+        let that = this;
+
         return new Promise((resolve) => {
+
+            that.writed = true;
+
             // noinspection JSCheckFunctionSignatures
             chrome.storage.local.set(data, resolve);
+
+        });
+
+    }
+
+    async getSettings() {
+        return this.getDataFromStorage(this.siteName, 'settings');
+    }
+
+    async getMode() {
+        return (await this.getSettings()).mode;
+    }
+
+    async getId() {
+        return this.getDataFromStorage(this.siteName, 'id');
+    }
+
+    async getArrID() {
+        return this.getDataFromStorage(this.siteName, 'arrID');
+    }
+
+    async setMode(mode) {
+
+        this.EAStorage[this.siteName].settings.mode = mode;
+
+        await this.setDataToStorage({
+            'EAStorage': this.EAStorage
+        });
+
+    }
+
+    async setId(id) {
+
+        this.EAStorage[this.siteName].id = id;
+
+        await this.setDataToStorage({
+            'EAStorage': this.EAStorage
+        });
+
+    }
+
+    async setArrID(arrID) {
+
+        this.EAStorage[this.siteName].arrID = arrID;
+
+        await this.setDataToStorage({
+            'EAStorage': this.EAStorage
         });
 
     }

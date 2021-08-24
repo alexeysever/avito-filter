@@ -19,38 +19,38 @@
     right: 0;
 }
 
-.EAButton {
+.avt_EAButton {
     position: absolute;
     right: 0;
     font-size: 32px;
     z-index: 99 !important;
 }
 
-.EAButton.EAClose {
+.avt_EAButton.avt_EAClose {
     font-size: 33px;
     right: -28px;
     top: -12px;
 }
 
-.EABlockedMess .EAButton.EAClose {
+.avt_EABlockedMess .avt_EAButton.avt_EAClose {
     font-size: 30px;
     right: -28px;
     top: 1px;
 }
 
-.EANewMess {
+.avt_EANewMess {
     background-color: #82ffb4 !important;
 }
 
-.EABlockedMess {
+.avt_EABlockedMess {
     background-color: burlywood !important;
 }
 
-.EAHiddenMess {
+.avt_EAHiddenMess {
     display: none !important;
 }
 
-.buttonShowHidden, .buttonStartMonitoring, .EAButton {
+.buttonShowHidden, .buttonStartMonitoring, .avt_EAButton {
     cursor: pointer;
 }
 
