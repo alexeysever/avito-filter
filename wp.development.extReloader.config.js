@@ -1,5 +1,5 @@
 const path = require('path');
-const ExtensionReloader  = require('webpack-extension-reloader');
+const ExtensionReloader = require('webpack-extension-reloader');
 const CopyPlugin = require('copy-webpack-plugin');
 
 let dist = './dev_ext_reloader';
@@ -46,23 +46,25 @@ module.exports = () => {
             ],
         },
         plugins: [
-            new CopyPlugin([
-                {
-                    from: 'icon16.png'
-                },
-                {
-                    from: 'icon48.png'
-                },
-                {
-                    from: 'icon128.png'
-                },
-                {
-                    from: 'melody.mp3'
-                },
-                {
-                    from: 'content.css'
-                }
-            ]),
+            new CopyPlugin({
+                patterns: [
+                    {
+                        from: 'icon16.png'
+                    },
+                    {
+                        from: 'icon48.png'
+                    },
+                    {
+                        from: 'icon128.png'
+                    },
+                    {
+                        from: 'melody.mp3'
+                    },
+                    {
+                        from: 'content.css'
+                    }
+                ]
+            }),
             new ExtensionReloader({
                 port: 9090,
                 reloadPage: true,

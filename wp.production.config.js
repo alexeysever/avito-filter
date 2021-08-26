@@ -9,7 +9,7 @@ let entry = {
 
 /**
  *
- * @returns {{output: {path: string, filename: string}, mode: string, devtool: *, entry: {content: string}, optimization: {minimize: boolean, minimizer: [TerserPlugin]}, plugins: [*], module: {rules: [{test: RegExp, use: {loader: string}, exclude: RegExp}, {test: RegExp, use: [string]}]}, target: string}}
+ * @returns {{output: {path: string, filename: string}, mode: string, devtool: boolean, entry: {content: string}, watch: boolean, optimization: {minimize: boolean, minimizer: *[]}, plugins: *[], module: {rules: [{test: RegExp, use: {loader: string}, exclude: RegExp}, {test: RegExp, use: string[]}]}}}
  */
 module.exports = () => {
     return {
@@ -38,11 +38,28 @@ module.exports = () => {
             ],
         },
         plugins: [
-            new CopyPlugin([
-                {
-                    from: "./manifest.json"
-                },
-            ])
+            new CopyPlugin({
+                patterns: [
+                    {
+                        from: './manifest.json'
+                    },
+                    {
+                        from: 'icon16.png'
+                    },
+                    {
+                        from: 'icon48.png'
+                    },
+                    {
+                        from: 'icon128.png'
+                    },
+                    {
+                        from: 'melody.mp3'
+                    },
+                    {
+                        from: 'content.css'
+                    }
+                ]
+            })
         ],
         mode: 'production',
         devtool: false,
@@ -52,5 +69,5 @@ module.exports = () => {
                 new TerserPlugin()
             ]
         }
-    }
+    };
 };
