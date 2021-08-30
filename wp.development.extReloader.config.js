@@ -1,3 +1,5 @@
+// noinspection JSValidateTypes
+
 const path = require('path');
 const ExtensionReloader = require('webpack-extension-reloader');
 const CopyPlugin = require('copy-webpack-plugin');

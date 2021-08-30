@@ -4,14 +4,40 @@ import $ from 'jquery';
 import Extension_storage from './Storage';
 import _ from 'lodash';
 
+let svg_buttonX = $('<svg data-prefix="far" data-icon="times-circle" viewBox="0 0 512 512" height="30" width="30" xmlns="http://www.w3.org/2000/svg"> <path d="M256 456c-113.4937 0-200-92.0317-200-200S143.307 56 256 56s200 92.5055 200 200-86.5063 200-200 200z" class="in-circle" fill="none" stroke-width=".6321"/> <path fill="green" d="M256 8C119 8 8 119 8 256s111 248 248 248 248-111 248-248S393 8 256 8zm0 448c-110.5 0-200-89.5-200-200S145.5 56 256 56s200 89.5 200 200-89.5 200-200 200zm101.8-262.2L295.6 256l62.2 62.2c4.7 4.7 4.7 12.3 0 17l-22.6 22.6c-4.7 4.7-12.3 4.7-17 0L256 295.6l-62.2 62.2c-4.7 4.7-12.3 4.7-17 0l-22.6-22.6c-4.7-4.7-4.7-12.3 0-17l62.2-62.2-62.2-62.2c-4.7-4.7-4.7-12.3 0-17l22.6-22.6c4.7-4.7 12.3-4.7 17 0l62.2 62.2 62.2-62.2c4.7-4.7 12.3-4.7 17 0l22.6 22.6c4.7 4.7 4.7 12.3 0 17z" class="out-circle"/></svg>')
+    .hover(function () {
+            $('.in-circle', this).addClass('red');
+        },
+        function () {
+            $('.in-circle', this).removeClass('red');
+        });
+
+let svg_buttonOK = $('<svg xmlns="http://www.w3.org/2000/svg" class=".ok-button"\n' +
+    '     data-icon="times-circle" data-prefix="far" viewBox="0 0 512 512" width="30" height="30">\n' +
+    '    <path class="in-circle" fill="none" stroke-width=".6" d="M270 456a200 200 0 11-1-399 200 200 0 011 399z"/>\n' +
+    '    <g fill="red">\n' +
+    '        <path \n' +
+    '              d="M253 258c0 67-34 101-93 102-70 0-89-43-89-99 0-65 35-100 93-101 68 0 89 43 89 98zm-41 2c2-33-11-69-49-67-34 1-51 21-51 66 0 42 12 70 50 68 33 0 49-22 50-67z"\n' +
+    '              color="#000" />\n' +
+    '        <path \n' +
+    '              d="M406 357c-10 0-19 1-23-6l-58-92v92c0 6-13 6-19 6-11 0-20-1-20-6V169c0-3 3-6 20-6 16 0 19 3 19 6v82l56-81c4-8 13-7 22-7 21 1 26 3 14 20l-53 69 58 87c10 16 3 18-16 18z"\n' +
+    '              />\n' +
+    '    </g>\n' +
+    '    <path class="out-circle" fill="red"\n' +
+    '          d="M256 8a248 248 0 100 496 248 248 0 000-496zm0 448a200 200 0 110-400 200 200 0 010 400z"/>\n' +
+    '</svg>')
+    .hover(function () {
+            $('.in-circle', this).addClass('green');
+        },
+        function () {
+            $('.in-circle', this).removeClass('green');
+        });
+
 let mode,
     newID = [],
     blockedMess = [],
-    boxWithX = '☒',
-    boxWithOk = '🆗',
     timerID,
     storage,
-    //DOMMutationDetected = false,
     class_buttonClose,
     selector_buttonClose,
     class_newMess,
@@ -80,7 +106,7 @@ async function olx_start() {
 
 function buttonsInit() {
     buttonArrows = $('<div class="buttonArrows">&#8644;</div>');
-    buttonClose = $('<span>☒</span>');
+    buttonClose = $('<span></span>').append($(svg_buttonX).clone(true));
     menu = $('<div class=\'EAMenu\'></div>');
     buttonShowHidden = $('<p class=\'buttonShowHidden\'>Показать скрытые</p>');
     buttonMonitoring = $('<p class=\'buttonStartMonitoring\' ' +
@@ -102,11 +128,6 @@ function olx_setButtonsSettings() {
     selector_hiddenMess = '.olx_EAHiddenMess';
     selector_blockedMess = '.olx_EABlockedMess';
 
-    // Если не произошло изменений в DOM. Это простой переход на новую
-    // страницу. Или обновление страницы.
-    // Добавить кнопки и обработчики на страницу.
-    // В случае если - это изменение DOM (Olx), то добавление новых обработчиков
-    // в дополнение к старым вызывает ошибки в работе дополнения.
     buttonsInit();
     buttonClose.addClass(class_buttonClose).on('click', olx_buttonCloseOrOkHandler);
     buttonShowHidden.on('click', olx_buttonShowHiddenHandler);
@@ -118,6 +139,7 @@ function avito_setButtonsSettings() {
     class_buttonClose = 'avt_EAButton avt_EAClose';
     class_newMess = 'avt_EANewMess';
     class_hiddenMess = 'avt_EAHiddenMess';
+    class_blockedMess = 'avt_EABlockedMess';
     class_hiddenAndBlockedMess = 'avt_EABlockedMess avt_EAHiddenMess';
     selector_buttonClose = '.avt_EAButton.avt_EAClose';
     selector_newMess = '.avt_EANewMess';
@@ -257,7 +279,6 @@ function olx_addColorToNewMess() {
 
 let getOlxWrapElementByDataId = (id) => $('.wrap').has(`[data-id=${id}]`);
 let getOlxMainElementByWrapElement = (wrapElement) => $('.offer-wrapper>table', wrapElement);
-let getOlxButtonByMainElement = (mainElement) => $(selector_buttonClose, mainElement);
 
 function olx_hideBlockedMess(arr) {
 
@@ -265,24 +286,14 @@ function olx_hideBlockedMess(arr) {
 
         let wrapElement = getOlxWrapElementByDataId(id);
         let mainElem = getOlxMainElementByWrapElement(wrapElement);
+        let olxButton = $(selector_buttonClose, mainElem);
 
-        _.flow([
-            _.partial(addClass, mainElem, class_blockedMess),
-            _.partial(addClass, wrapElement, class_hiddenMess),
-            _.partial(getOlxButtonByMainElement, mainElem),
-            _.partial(setTextElement, _, boxWithOk)
-        ])();
+        $(mainElem).addClass(class_blockedMess);
+        $(wrapElement).addClass(class_hiddenMess);
+        olxButton.find('svg').remove('svg');
+        olxButton.append($(svg_buttonOK).clone(true));
 
     });
-
-    /*arr.forEach(function (item) {
-        let mainElem = getOlxWrapElementByDataId(item);
-        addClass(mainElem, class_hiddenAndBlockedMess);
-        //mainElem.addClass(class_hiddenAndBlockedMess);
-        //$(selector_buttonClose, mainElem).text(boxWithOk);
-        getOlxButtonByMainElement(mainElem);
-        setTextElement(_, boxWithOk);
-    });*/
 
 }
 
@@ -290,7 +301,7 @@ function avito_hideBlockedMess(arr) {
     arr.forEach(function (item) {
         let mainElem = $(`[id="${item}"]`);
         mainElem.addClass(class_hiddenAndBlockedMess);
-        $(selector_buttonClose, mainElem).text(boxWithOk);
+        $(selector_buttonClose, mainElem).find('svg').remove('svg').end().append($(svg_buttonOK).clone(true));
     });
 }
 
@@ -316,33 +327,29 @@ async function avito_buttonCloseOrOkHandler(event) {
 
     event.stopPropagation();
 
-    if ($(event.currentTarget).text() === boxWithOk) {
+    let id = event.currentTarget.parentElement.id;
+    let mainElement = $(`[id=${id}]`);
 
-        $(event.currentTarget).text(boxWithX);
-        let id = event.currentTarget.parentElement.id;
-        $(`[id=${id}]`).removeClass(class_hiddenAndBlockedMess);
+    if (mainElement.hasClass(class_blockedMess)) {
+
+        mainElement.removeClass(class_hiddenAndBlockedMess);
+        mainElement.find(selector_buttonClose).find('svg').remove('svg').end().append($(svg_buttonX).clone(true));
         await avito_toggleBlockMessInDB(event.currentTarget.parentElement, false);
 
     }
     else {
 
-        let id = event.currentTarget.parentElement.id;
-        $(`[id=${id}]`).addClass(class_hiddenAndBlockedMess);
-        $(event.currentTarget).text(boxWithOk);
+        mainElement.addClass(class_hiddenAndBlockedMess);
+        mainElement.find(selector_buttonClose).find('svg').remove('svg').end().append($(svg_buttonOK).clone(true));
         await avito_toggleBlockMessInDB(event.currentTarget.parentElement, true);
 
     }
 
 }
 
-let setTextElement = (element, text) => $(element).text(text);
-let getTextFromElement = (element) => $(element).text();
-let getOlxIdFromButtonElement = (element) => $(element).closest('table').attr('data-id');
-let getClosestElement = (element, selector) => $(element).closest(selector);
 let removeClass = (element, cl) => $(element).removeClass(cl);
 let addClass = (element, cl) => $(element).addClass(cl);
 let getElementFromEvent = (event) => _.property('currentTarget')(event);
-let eventStopPropagation = (event) => event.stopPropagation();
 
 /**
  * Обрабатываем нажатие кнопок "спрятать" и "показать"
@@ -350,39 +357,36 @@ let eventStopPropagation = (event) => event.stopPropagation();
  */
 async function olx_buttonCloseOrOkHandler(event) {
 
-    eventStopPropagation(event);
+    event.stopPropagation();
 
-    let buttonElement = getElementFromEvent(event);
-
-    let isBoxWithOk = _.flow([
-        _.partial(getTextFromElement, _),
-        _.partial(_.isEqual, _, boxWithOk)
-    ]);
+    let buttonElement = $(getElementFromEvent(event));
+    let id = $(buttonElement).closest('.wrap .offer-wrapper>table').attr('data-id');
+    let mainElement = $(`.wrap [data-id=${id}]`);
+    let wrapElement = $(mainElement).closest('.wrap');
+    buttonElement = $('.olx_EAButton.olx_EAClose', wrapElement);
 
     let setElementUnhidden = _.flow([
-        _.partial(setTextElement, buttonElement, boxWithX),
-        _.partial(getClosestElement, buttonElement, '.wrap'),
-        _.partial(removeClass, _, class_hiddenMess),
-        _.partial(getOlxMainElementByWrapElement, _),
-        _.partial(removeClass, _, class_blockedMess),
-        _.partial(getOlxIdFromButtonElement, buttonElement),
-        _.partial(olx_toggleBlockMessInDB, _, false)
+        () => buttonElement.find('svg').remove('svg'),
+        () => (buttonElement.append($(svg_buttonX).clone(true))),
+        _.partial(removeClass, wrapElement, class_hiddenMess),
+        _.partial(removeClass, mainElement, class_blockedMess),
+        _.partial(olx_toggleBlockMessInDB, id, false)
     ]);
 
     let setElementHidden = _.flow([
-        _.partial(getClosestElement, buttonElement, '.wrap'),
-        _.partial(addClass, _, class_hiddenMess),
-        _.partial(getOlxMainElementByWrapElement, _),
-        _.partial(addClass, _, class_blockedMess),
-        _.partial(setTextElement, buttonElement, boxWithOk),
-        _.partial(getOlxIdFromButtonElement, buttonElement),
-        _.partial(olx_toggleBlockMessInDB, _, true)
+        _.partial(addClass, wrapElement, class_hiddenMess),
+        _.partial(addClass, mainElement, class_blockedMess),
+        () => buttonElement.find('svg').remove('svg'),
+        () => buttonElement.append($(svg_buttonOK).clone(true)),
+        _.partial(olx_toggleBlockMessInDB, id, true)
     ]);
 
-    await _.cond([
-        [_.partial(isBoxWithOk, buttonElement), setElementUnhidden],
-        [_.stubTrue, setElementHidden]
-    ])();
+    if ($(mainElement).hasClass(class_blockedMess)) {
+        setElementUnhidden();
+    }
+    else {
+        setElementHidden();
+    }
 
 }
 
