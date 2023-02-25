@@ -1,0 +1,11 @@
+{
+    "configurations": [
+        {
+            "type": "node-terminal",
+            "name": "Run Script: extension reloader",
+            "request": "launch",
+            "command": "npm run 'extension reloader'",
+            "cwd": "${workspaceFolder}"
+        }
+    ]
+}

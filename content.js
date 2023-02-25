@@ -297,8 +297,8 @@ function olx_hideBlockedMess(arr) {
 
 }
 
-function avito_hideBlockedMess(arr) {
-    arr.forEach(function (item) {
+function avito_hideBlockedMess(arr_id_blockedMess) {
+    arr_id_blockedMess.forEach(function (item) {
         let mainElem = $(`[id="${item}"]`);
         mainElem.addClass(class_hiddenAndBlockedMess);
         $(selector_buttonClose, mainElem).find('svg').remove('svg').end().append($(svg_buttonOK).clone(true));
@@ -311,7 +311,9 @@ function avito_hideBlockedMess(arr) {
 function addButtons(listAds) {
 
     // кнопки в объявлениях
-    listAds.prepend(buttonClose);
+    listAds.each(function (i, e) {
+        $(e).prepend($(buttonClose).clone(true));
+    });
 
     // меню
     menu.append(buttonMonitoring).append(buttonShowHidden).append(buttonArrows);

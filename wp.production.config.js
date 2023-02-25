@@ -57,6 +57,9 @@ module.exports = () => {
                     },
                     {
                         from: 'content.css'
+                    },
+                    {
+                        from: 'README.md'
                     }
                 ]
             })
