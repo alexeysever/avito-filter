@@ -79,7 +79,7 @@ module.exports = env => {
                 }
             })
         ],
-        mode: env.production === true ? 'production' : 'development',
+        mode: 'development',
         devtool: env.production === true ? false : 'source-map',
         optimization: {
             minimize: env.production === true,

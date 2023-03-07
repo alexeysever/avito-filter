@@ -1,7 +1,7 @@
 // noinspection JSValidateTypes
 
 const path = require('path');
-const ExtensionReloader = require('webpack-extension-reloader');
+const ExtensionReloader = require('webpack-ext-reloader');
 const CopyPlugin = require('copy-webpack-plugin');
 
 let dist = './dev_ext_reloader';
@@ -51,7 +51,8 @@ module.exports = () => {
             new CopyPlugin({
                 patterns: [
                     {
-                        from: 'icon16.png'
+                        from: 'icon16.png',
+                        to: dist
                     },
                     {
                         from: 'icon48.png'
@@ -78,7 +79,7 @@ module.exports = () => {
             })
         ],
         mode: 'development',
-        devtool: 'source-map',
+        devtool: 'inline-source-map',
         optimization: {
             minimize: false
         }

@@ -44,23 +44,25 @@ module.exports = () => {
             ],
         },
         plugins: [
-            new CopyPlugin([
-                {
-                    from: 'icon16.png'
-                },
-                {
-                    from: 'icon48.png'
-                },
-                {
-                    from: 'icon128.png'
-                },
-                {
-                    from: 'melody.mp3'
-                },
-                {
-                    from: 'manifest.json'
-                }
-            ]),
+            new CopyPlugin({
+                patterns: [
+                    {
+                        from: 'icon16.png'
+                    },
+                    {
+                        from: 'icon48.png'
+                    },
+                    {
+                        from: 'icon128.png'
+                    },
+                    {
+                        from: 'melody.mp3'
+                    },
+                    {
+                        from: 'manifest.json'
+                    }
+                ]
+            }),
         ],
         mode: 'development',
         devtool: 'source-map',

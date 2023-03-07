@@ -22,7 +22,7 @@ describe('Avito главная', function () {
             args: [
                 `--disable-extensions-except=${pathToExtension}`,
                 `--load-extension=${pathToExtension}`,
-                '--window-size=1500,1010'
+                //'--window-size=1500,1010'
             ],
         })
 
@@ -31,7 +31,7 @@ describe('Avito главная', function () {
     it('puppeteer new page', async function () {
 
         page = await browser.newPage()
-        await page.setViewport({width: 1500, height: 1000});
+        //await page.setViewport(/* {width: 1500, height: 1000} */);
         pptrUtils = new PuppeteerUtils(page)
 
     })
@@ -68,7 +68,7 @@ describe('Avito главная', function () {
 
     it('Все найденные объявления содержат id вида "i+цифры"', async function () {
 
-        let item = await new Puppeteer$('[data-marker=item]', pptrJQ)
+        let item = new Puppeteer$('[data-marker=item]', pptrJQ)
 
         let filtered = await item.filter((handle) => {
 

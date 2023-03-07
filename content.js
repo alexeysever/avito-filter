@@ -119,13 +119,13 @@ function buttonsInit() {
 function olx_setButtonsSettings() {
 
     class_buttonClose = 'olx_EAButton olx_EAClose';
-    class_newMess = 'olx_EANewMess';
-    class_hiddenMess = 'olx_EAHiddenMess';
+    class_newMess     = 'olx_EANewMess';
+    class_hiddenMess  = 'olx_EAHiddenMess';
     class_blockedMess = 'olx_EABlockedMess';
     class_hiddenAndBlockedMess = 'olx_EABlockedMess olx_EAHiddenMess';
     selector_buttonClose = '.olx_EAButton.olx_EAClose';
-    selector_newMess = '.olx_EANewMess';
-    selector_hiddenMess = '.olx_EAHiddenMess';
+    selector_newMess     = '.olx_EANewMess';
+    selector_hiddenMess  = '.olx_EAHiddenMess';
     selector_blockedMess = '.olx_EABlockedMess';
 
     buttonsInit();
@@ -137,19 +137,19 @@ function olx_setButtonsSettings() {
 function avito_setButtonsSettings() {
 
     class_buttonClose = 'avt_EAButton avt_EAClose';
-    class_newMess = 'avt_EANewMess';
-    class_hiddenMess = 'avt_EAHiddenMess';
+    class_newMess     = 'avt_EANewMess';
+    class_hiddenMess  = 'avt_EAHiddenMess';
     class_blockedMess = 'avt_EABlockedMess';
     class_hiddenAndBlockedMess = 'avt_EABlockedMess avt_EAHiddenMess';
     selector_buttonClose = '.avt_EAButton.avt_EAClose';
-    selector_newMess = '.avt_EANewMess';
-    selector_hiddenMess = '.avt_EAHiddenMess';
+    selector_newMess     = '.avt_EANewMess';
+    selector_hiddenMess  = '.avt_EAHiddenMess';
     selector_blockedMess = '.avt_EABlockedMess';
 
     buttonsInit();
     buttonClose.addClass(class_buttonClose).on('click', avito_buttonCloseOrOkHandler);
     buttonShowHidden.on('click', avito_buttonShowHiddenHandler);
-
+    
 }
 
 async function olx_findAllAds() {
@@ -174,14 +174,17 @@ async function olx_findAllAds() {
 
     }
 
-    mutationObserver();
+    mutationObserverOlx();
 
 }
 
 async function avito_findAllAds() {
 
-    let allAds = $('[data-marker="catalog-serp"] [data-marker="item"]');
-
+    let allAds = $('[data-marker="catalog-serp"] [data-marker="item"]').on('change', function () {
+        let e = this;
+        debugger;
+    });
+    
     // Тут происходит преобразование набора элементов в массив с набором id.
     let idArr = allAds.map(function () {
         return this.id;
@@ -203,6 +206,8 @@ async function avito_findAllAds() {
         avito_hideBlockedMess(blockedMess);
 
     }
+
+    mutationObserverAvito()
 
 }
 
@@ -469,7 +474,7 @@ async function buttonMonitoringToggle() {
 
 }
 
-function mutationObserver() {
+function mutationObserverOlx() {
 
     let mutationObserver = new MutationObserver(function () {
 
@@ -485,5 +490,30 @@ function mutationObserver() {
     });
 
     mutationObserver.observe(document.getElementById('listContainer'), {childList: true});
+
+}
+
+function mutationObserverAvito() {
+
+    let mutationObserver = new MutationObserver(function (mutRec, mutObs) {
+        debugger;
+        console.log('ok')
+        mutationObserver.disconnect();
+        newID = [];
+        blockedMess = [];
+
+        setTimeout(function () {
+            start().finally();
+        }, 2000);
+
+    });
+
+    //let el = $('[data-marker="catalog-serp"] [data-marker="item"]')[0].parentElement
+    let el = document.getElementById('app')
+    mutationObserver.observe(el, {
+        childList: true,
+        attributes: true,
+        subtree: true
+    });
 
 }
