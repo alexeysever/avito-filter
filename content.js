@@ -5,12 +5,12 @@ import Extension_storage from './Storage';
 import _ from 'lodash';
 
 let svg_buttonX = $('<svg data-prefix="far" data-icon="times-circle" viewBox="0 0 512 512" height="30" width="30" xmlns="http://www.w3.org/2000/svg"> <path d="M256 456c-113.4937 0-200-92.0317-200-200S143.307 56 256 56s200 92.5055 200 200-86.5063 200-200 200z" class="in-circle" fill="none" stroke-width=".6321"/> <path fill="green" d="M256 8C119 8 8 119 8 256s111 248 248 248 248-111 248-248S393 8 256 8zm0 448c-110.5 0-200-89.5-200-200S145.5 56 256 56s200 89.5 200 200-89.5 200-200 200zm101.8-262.2L295.6 256l62.2 62.2c4.7 4.7 4.7 12.3 0 17l-22.6 22.6c-4.7 4.7-12.3 4.7-17 0L256 295.6l-62.2 62.2c-4.7 4.7-12.3 4.7-17 0l-22.6-22.6c-4.7-4.7-4.7-12.3 0-17l62.2-62.2-62.2-62.2c-4.7-4.7-4.7-12.3 0-17l22.6-22.6c4.7-4.7 12.3-4.7 17 0l62.2 62.2 62.2-62.2c4.7-4.7 12.3-4.7 17 0l22.6 22.6c4.7 4.7 4.7 12.3 0 17z" class="out-circle"/></svg>')
-    .hover(function () {
-            $('.in-circle', this).addClass('red');
-        },
-        function () {
-            $('.in-circle', this).removeClass('red');
-        });
+	.hover(function () {
+		$('.in-circle', this).addClass('red');
+	},
+	function () {
+		$('.in-circle', this).removeClass('red');
+	});
 
 let svg_buttonOK = $('<svg xmlns="http://www.w3.org/2000/svg" class=".ok-button"\n' +
     '     data-icon="times-circle" data-prefix="far" viewBox="0 0 512 512" width="30" height="30">\n' +
@@ -26,260 +26,260 @@ let svg_buttonOK = $('<svg xmlns="http://www.w3.org/2000/svg" class=".ok-button"
     '    <path class="out-circle" fill="red"\n' +
     '          d="M256 8a248 248 0 100 496 248 248 0 000-496zm0 448a200 200 0 110-400 200 200 0 010 400z"/>\n' +
     '</svg>')
-    .hover(function () {
-            $('.in-circle', this).addClass('green');
-        },
-        function () {
-            $('.in-circle', this).removeClass('green');
-        });
+	.hover(function () {
+		$('.in-circle', this).addClass('green');
+	},
+	function () {
+		$('.in-circle', this).removeClass('green');
+	});
 
 let mode,
-    newID = [],
-    blockedMess = [],
-    timerID,
-    storage,
-    class_buttonClose,
-    selector_buttonClose,
-    class_newMess,
-    selector_newMess,
-    selector_blockedMess,
-    class_blockedMess,
-    class_hiddenMess,
-    selector_hiddenMess,
-    class_hiddenAndBlockedMess;
+	newID = [],
+	blockedMess = [],
+	timerID,
+	storage,
+	class_buttonClose,
+	selector_buttonClose,
+	class_newMess,
+	selector_newMess,
+	selector_blockedMess,
+	class_blockedMess,
+	class_hiddenMess,
+	selector_hiddenMess,
+	class_hiddenAndBlockedMess;
 
 let buttonArrows,
-    buttonClose,
-    menu,
-    buttonShowHidden,
-    buttonMonitoring;
+	buttonClose,
+	menu,
+	buttonShowHidden,
+	buttonMonitoring;
 
 // start выполнится после завершения построения DOM.
 $(start);
 
 async function start() {
 
-    _.cond([
-        [avito_is, avito_start],
-        [olx_is, olx_start]
-    ])(window.location.host);
+	_.cond([
+		[avito_is, avito_start],
+		[olx_is, olx_start]
+	])(window.location.host);
 
 }
 
 function avito_is(host) {
-    return host.search(/www\.avito\.ru/) > -1;
+	return host.search(/www\.avito\.ru/) > -1;
 }
 
 function olx_is(host) {
-    return host.search(/www\.olx\.ua/) > -1;
+	return host.search(/www\.olx\.ua/) > -1;
 }
 
 async function avito_start() {
 
-    // Продолжить если это не главная страница.
-    if (!$('.cols.b-select-city').length) {
+	// Продолжить если это не главная страница.
+	if (!$('.cols.b-select-city').length) {
 
-        avito_setButtonsSettings();
+		avito_setButtonsSettings();
 
-        storage = new Extension_storage('avito');
-        await storage.initStorage();
-        await getSettings();
+		storage = new Extension_storage('avito');
+		await storage.initStorage();
+		await getSettings();
 
-        // Найти все объявления.
-        await avito_findAllAds();
+		// Найти все объявления.
+		await avito_findAllAds();
 
-    }
+	}
 
 }
 
 async function olx_start() {
 
-    olx_setButtonsSettings();
+	olx_setButtonsSettings();
 
-    storage = new Extension_storage('olx');
-    await storage.initStorage();
-    await getSettings();
+	storage = new Extension_storage('olx');
+	await storage.initStorage();
+	await getSettings();
 
-    await olx_findAllAds();
+	await olx_findAllAds();
 
 }
 
 function buttonsInit() {
-    buttonArrows = $('<div class="buttonArrows">&#8644;</div>');
-    buttonClose = $('<span></span>').append($(svg_buttonX).clone(true));
-    menu = $('<div class=\'EAMenu\'></div>');
-    buttonShowHidden = $('<p class=\'buttonShowHidden\'>Показать скрытые</p>');
-    buttonMonitoring = $('<p class=\'buttonStartMonitoring\' ' +
+	buttonArrows = $('<div class="buttonArrows">&#8644;</div>');
+	buttonClose = $('<span></span>').append($(svg_buttonX).clone(true));
+	menu = $('<div class=\'EAMenu\'></div>');
+	buttonShowHidden = $('<p class=\'buttonShowHidden\'>Показать скрытые</p>');
+	buttonMonitoring = $('<p class=\'buttonStartMonitoring\' ' +
         'title=\'Эта страница будет обновляться каждые 30 секунд, ' +
         'до тех пор пока не будет найдено новое объявление, ' +
         'после чего будет проиграна мелодия\'>Наблюдение</p>')
-        .on('click', buttonMonitoringToggle);
+		.on('click', buttonMonitoringToggle);
 }
 
 function olx_setButtonsSettings() {
 
-    class_buttonClose = 'olx_EAButton olx_EAClose';
-    class_newMess     = 'olx_EANewMess';
-    class_hiddenMess  = 'olx_EAHiddenMess';
-    class_blockedMess = 'olx_EABlockedMess';
-    class_hiddenAndBlockedMess = 'olx_EABlockedMess olx_EAHiddenMess';
-    selector_buttonClose = '.olx_EAButton.olx_EAClose';
-    selector_newMess     = '.olx_EANewMess';
-    selector_hiddenMess  = '.olx_EAHiddenMess';
-    selector_blockedMess = '.olx_EABlockedMess';
+	class_buttonClose = 'olx_EAButton olx_EAClose';
+	class_newMess     = 'olx_EANewMess';
+	class_hiddenMess  = 'olx_EAHiddenMess';
+	class_blockedMess = 'olx_EABlockedMess';
+	class_hiddenAndBlockedMess = 'olx_EABlockedMess olx_EAHiddenMess';
+	selector_buttonClose = '.olx_EAButton.olx_EAClose';
+	selector_newMess     = '.olx_EANewMess';
+	selector_hiddenMess  = '.olx_EAHiddenMess';
+	selector_blockedMess = '.olx_EABlockedMess';
 
-    buttonsInit();
-    buttonClose.addClass(class_buttonClose).on('click', olx_buttonCloseOrOkHandler);
-    buttonShowHidden.on('click', olx_buttonShowHiddenHandler);
+	buttonsInit();
+	buttonClose.addClass(class_buttonClose).on('click', olx_buttonCloseOrOkHandler);
+	buttonShowHidden.on('click', olx_buttonShowHiddenHandler);
 
 }
 
 function avito_setButtonsSettings() {
 
-    class_buttonClose = 'avt_EAButton avt_EAClose';
-    class_newMess     = 'avt_EANewMess';
-    class_hiddenMess  = 'avt_EAHiddenMess';
-    class_blockedMess = 'avt_EABlockedMess';
-    class_hiddenAndBlockedMess = 'avt_EABlockedMess avt_EAHiddenMess';
-    selector_buttonClose = '.avt_EAButton.avt_EAClose';
-    selector_newMess     = '.avt_EANewMess';
-    selector_hiddenMess  = '.avt_EAHiddenMess';
-    selector_blockedMess = '.avt_EABlockedMess';
+	class_buttonClose = 'avt_EAButton avt_EAClose';
+	class_newMess     = 'avt_EANewMess';
+	class_hiddenMess  = 'avt_EAHiddenMess';
+	class_blockedMess = 'avt_EABlockedMess';
+	class_hiddenAndBlockedMess = 'avt_EABlockedMess avt_EAHiddenMess';
+	selector_buttonClose = '.avt_EAButton.avt_EAClose';
+	selector_newMess     = '.avt_EANewMess';
+	selector_hiddenMess  = '.avt_EAHiddenMess';
+	selector_blockedMess = '.avt_EABlockedMess';
 
-    buttonsInit();
-    buttonClose.addClass(class_buttonClose).on('click', avito_buttonCloseOrOkHandler);
-    buttonShowHidden.on('click', avito_buttonShowHiddenHandler);
+	buttonsInit();
+	buttonClose.addClass(class_buttonClose).on('click', avito_buttonCloseOrOkHandler);
+	buttonShowHidden.on('click', avito_buttonShowHiddenHandler);
     
 }
 
 async function olx_findAllAds() {
 
-    let allAds = $('.wrap .offer .offer-wrapper>table');
+	let allAds = $('.wrap .offer .offer-wrapper>table');
 
-    let idArr = allAds.map(function () {
-        return $(this).attr('data-id');
-    }).get();
+	let idArr = allAds.map(function () {
+		return $(this).attr('data-id');
+	}).get();
 
-    allAds = $('.price', allAds);
+	allAds = $('.price', allAds);
 
-    if (allAds.length > 0) {
+	if (allAds.length > 0) {
 
-        addButtons(allAds);
+		addButtons(allAds);
 
-        let newId = await findIdInBase(idArr);
-        await writeNewIdInBD(newId);
-        olx_addColorToNewMess();
-        await monitoring();
-        olx_hideBlockedMess(blockedMess);
+		let newId = await findIdInBase(idArr);
+		await writeNewIdInBD(newId);
+		olx_addColorToNewMess();
+		await monitoring();
+		olx_hideBlockedMess(blockedMess);
 
-    }
+	}
 
-    mutationObserverOlx();
+	mutationObserverOlx();
 
 }
 
 async function avito_findAllAds() {
 
-    let allAds = $('[data-marker="catalog-serp"] [data-marker="item"]').on('change', function () {
-        let e = this;
-        debugger;
-    });
+	let allAds = $('[data-marker="catalog-serp"] [data-marker="item"]').on('change', function () {
+		let e = this;
+		debugger;
+	});
     
-    // Тут происходит преобразование набора элементов в массив с набором id.
-    let idArr = allAds.map(function () {
-        return this.id;
-    }).get();
+	// Тут происходит преобразование набора элементов в массив с набором id.
+	let idArr = allAds.map(function () {
+		return this.id;
+	}).get();
 
-    let vipAds = $('.serp-vips [data-marker="item"]').add('[class*="items-vip-"] [data-marker="item"]');
-    let witcherAds = $('[class*="items-witcher-"] [data-marker="item"]');
-    let listAds = allAds.not(vipAds).not(witcherAds);
+	let vipAds = $('.serp-vips [data-marker="item"]').add('[class*="items-vip-"] [data-marker="item"]');
+	let witcherAds = $('[class*="items-witcher-"] [data-marker="item"]');
+	let listAds = allAds.not(vipAds).not(witcherAds);
 
-    if (listAds.length > 0) {
+	if (listAds.length > 0) {
 
-        addButtons(listAds);
+		addButtons(listAds);
 
-        let newId = await findIdInBase(idArr);
+		let newId = await findIdInBase(idArr);
 
-        await writeNewIdInBD(newId);
-        avito_addColorToNewMess();
-        await monitoring();
-        avito_hideBlockedMess(blockedMess);
+		await writeNewIdInBD(newId);
+		avito_addColorToNewMess();
+		await monitoring();
+		avito_hideBlockedMess(blockedMess);
 
-    }
+	}
 
-    mutationObserverAvito()
+	mutationObserverAvito();
 
 }
 
 async function findIdInBase(idArr) {
 
-    let storage_ids_object = await storage.getId();
-    let storage_ids_arr = await storage.getArrID();
+	let storage_ids_object = await storage.getId();
+	let storage_ids_arr = await storage.getArrID();
 
-    idArr.forEach(function (item) {
+	idArr.forEach(function (item) {
 
-        // Если такой id уже есть в БД
-        if (item in storage_ids_object) {
+		// Если такой id уже есть в БД
+		if (item in storage_ids_object) {
 
-            // Если настройка "заблокирован" установленна в true у этого id
-            if (storage_ids_object[item].block === true) {
-                blockedMess.push(item);
-            }
+			// Если настройка "заблокирован" установленна в true у этого id
+			if (storage_ids_object[item].block === true) {
+				blockedMess.push(item);
+			}
 
-        }
+		}
 
-        // Если такого id нет в БД
-        if (storage_ids_arr.indexOf(item) === -1) {
+		// Если такого id нет в БД
+		if (storage_ids_arr.indexOf(item) === -1) {
 
-            storage_ids_arr.push(item);
-            newID.push(item);
+			storage_ids_arr.push(item);
+			newID.push(item);
 
-        }
+		}
 
-    });
+	});
 
-    return storage_ids_arr;
+	return storage_ids_arr;
 
 }
 
 async function monitoring() {
 
-    if (mode === 'monitoring') {
-        // Если есть новые объявления.
-        if ($(selector_newMess).length > 0) {
-            await buttonMonitoringToggle();
-            alarmUser();
-        }
-        else {
-            buttonMonitoring.addClass('isActive');
-            timerID = setTimeout(function () {
-                location.reload();
-            }, 30000);
-        }
-    }
+	if (mode === 'monitoring') {
+		// Если есть новые объявления.
+		if ($(selector_newMess).length > 0) {
+			await buttonMonitoringToggle();
+			alarmUser();
+		}
+		else {
+			buttonMonitoring.addClass('isActive');
+			timerID = setTimeout(function () {
+				location.reload();
+			}, 30000);
+		}
+	}
 
 }
 
 function alarmUser() {
-    let myAudio = new Audio();
-    myAudio.src = chrome.runtime.getURL('melody.mp3');
-    myAudio.play().finally();
+	let myAudio = new Audio();
+	myAudio.src = chrome.runtime.getURL('melody.mp3');
+	myAudio.play().finally();
 }
 
 async function getSettings() {
-    mode = await storage.getMode();
+	mode = await storage.getMode();
 }
 
 function avito_addColorToNewMess() {
-    newID.forEach(function (item) {
-        $(`[id="${item}"]`).addClass(class_newMess);
-    });
+	newID.forEach(function (item) {
+		$(`[id="${item}"]`).addClass(class_newMess);
+	});
 }
 
 function olx_addColorToNewMess() {
-    newID.forEach(function (item) {
-        $(`[data-id="${item}"]`).addClass(class_newMess);
-    });
+	newID.forEach(function (item) {
+		$(`[data-id="${item}"]`).addClass(class_newMess);
+	});
 }
 
 let getOlxWrapElementByDataId = (id) => $('.wrap').has(`[data-id=${id}]`);
@@ -287,27 +287,27 @@ let getOlxMainElementByWrapElement = (wrapElement) => $('.offer-wrapper>table', 
 
 function olx_hideBlockedMess(arr) {
 
-    _(arr).each(function (id) {
+	_(arr).each(function (id) {
 
-        let wrapElement = getOlxWrapElementByDataId(id);
-        let mainElem = getOlxMainElementByWrapElement(wrapElement);
-        let olxButton = $(selector_buttonClose, mainElem);
+		let wrapElement = getOlxWrapElementByDataId(id);
+		let mainElem = getOlxMainElementByWrapElement(wrapElement);
+		let olxButton = $(selector_buttonClose, mainElem);
 
-        $(mainElem).addClass(class_blockedMess);
-        $(wrapElement).addClass(class_hiddenMess);
-        olxButton.find('svg').remove('svg');
-        olxButton.append($(svg_buttonOK).clone(true));
+		$(mainElem).addClass(class_blockedMess);
+		$(wrapElement).addClass(class_hiddenMess);
+		olxButton.find('svg').remove('svg');
+		olxButton.append($(svg_buttonOK).clone(true));
 
-    });
+	});
 
 }
 
 function avito_hideBlockedMess(arr_id_blockedMess) {
-    arr_id_blockedMess.forEach(function (item) {
-        let mainElem = $(`[id="${item}"]`);
-        mainElem.addClass(class_hiddenAndBlockedMess);
-        $(selector_buttonClose, mainElem).find('svg').remove('svg').end().append($(svg_buttonOK).clone(true));
-    });
+	arr_id_blockedMess.forEach(function (item) {
+		let mainElem = $(`[id="${item}"]`);
+		mainElem.addClass(class_hiddenAndBlockedMess);
+		$(selector_buttonClose, mainElem).find('svg').remove('svg').end().append($(svg_buttonOK).clone(true));
+	});
 }
 
 /**
@@ -315,14 +315,14 @@ function avito_hideBlockedMess(arr_id_blockedMess) {
  */
 function addButtons(listAds) {
 
-    // кнопки в объявлениях
-    listAds.each(function (i, e) {
-        $(e).prepend($(buttonClose).clone(true));
-    });
+	// кнопки в объявлениях
+	listAds.each(function (i, e) {
+		$(e).prepend($(buttonClose).clone(true));
+	});
 
-    // меню
-    menu.append(buttonMonitoring).append(buttonShowHidden).append(buttonArrows);
-    $('body').append(menu);
+	// меню
+	menu.append(buttonMonitoring).append(buttonShowHidden).append(buttonArrows);
+	$('body').append(menu);
 
 }
 
@@ -332,25 +332,25 @@ function addButtons(listAds) {
  */
 async function avito_buttonCloseOrOkHandler(event) {
 
-    event.stopPropagation();
+	event.stopPropagation();
 
-    let id = event.currentTarget.parentElement.id;
-    let mainElement = $(`[id=${id}]`);
+	let id = event.currentTarget.parentElement.id;
+	let mainElement = $(`[id=${id}]`);
 
-    if (mainElement.hasClass(class_blockedMess)) {
+	if (mainElement.hasClass(class_blockedMess)) {
 
-        mainElement.removeClass(class_hiddenAndBlockedMess);
-        mainElement.find(selector_buttonClose).find('svg').remove('svg').end().append($(svg_buttonX).clone(true));
-        await avito_toggleBlockMessInDB(event.currentTarget.parentElement, false);
+		mainElement.removeClass(class_hiddenAndBlockedMess);
+		mainElement.find(selector_buttonClose).find('svg').remove('svg').end().append($(svg_buttonX).clone(true));
+		await avito_toggleBlockMessInDB(event.currentTarget.parentElement, false);
 
-    }
-    else {
+	}
+	else {
 
-        mainElement.addClass(class_hiddenAndBlockedMess);
-        mainElement.find(selector_buttonClose).find('svg').remove('svg').end().append($(svg_buttonOK).clone(true));
-        await avito_toggleBlockMessInDB(event.currentTarget.parentElement, true);
+		mainElement.addClass(class_hiddenAndBlockedMess);
+		mainElement.find(selector_buttonClose).find('svg').remove('svg').end().append($(svg_buttonOK).clone(true));
+		await avito_toggleBlockMessInDB(event.currentTarget.parentElement, true);
 
-    }
+	}
 
 }
 
@@ -364,36 +364,36 @@ let getElementFromEvent = (event) => _.property('currentTarget')(event);
  */
 async function olx_buttonCloseOrOkHandler(event) {
 
-    event.stopPropagation();
+	event.stopPropagation();
 
-    let buttonElement = $(getElementFromEvent(event));
-    let id = $(buttonElement).closest('.wrap .offer-wrapper>table').attr('data-id');
-    let mainElement = $(`.wrap [data-id=${id}]`);
-    let wrapElement = $(mainElement).closest('.wrap');
-    buttonElement = $('.olx_EAButton.olx_EAClose', wrapElement);
+	let buttonElement = $(getElementFromEvent(event));
+	let id = $(buttonElement).closest('.wrap .offer-wrapper>table').attr('data-id');
+	let mainElement = $(`.wrap [data-id=${id}]`);
+	let wrapElement = $(mainElement).closest('.wrap');
+	buttonElement = $('.olx_EAButton.olx_EAClose', wrapElement);
 
-    let setElementUnhidden = _.flow([
-        () => buttonElement.find('svg').remove('svg'),
-        () => (buttonElement.append($(svg_buttonX).clone(true))),
-        _.partial(removeClass, wrapElement, class_hiddenMess),
-        _.partial(removeClass, mainElement, class_blockedMess),
-        _.partial(olx_toggleBlockMessInDB, id, false)
-    ]);
+	let setElementUnhidden = _.flow([
+		() => buttonElement.find('svg').remove('svg'),
+		() => (buttonElement.append($(svg_buttonX).clone(true))),
+		_.partial(removeClass, wrapElement, class_hiddenMess),
+		_.partial(removeClass, mainElement, class_blockedMess),
+		_.partial(olx_toggleBlockMessInDB, id, false)
+	]);
 
-    let setElementHidden = _.flow([
-        _.partial(addClass, wrapElement, class_hiddenMess),
-        _.partial(addClass, mainElement, class_blockedMess),
-        () => buttonElement.find('svg').remove('svg'),
-        () => buttonElement.append($(svg_buttonOK).clone(true)),
-        _.partial(olx_toggleBlockMessInDB, id, true)
-    ]);
+	let setElementHidden = _.flow([
+		_.partial(addClass, wrapElement, class_hiddenMess),
+		_.partial(addClass, mainElement, class_blockedMess),
+		() => buttonElement.find('svg').remove('svg'),
+		() => buttonElement.append($(svg_buttonOK).clone(true)),
+		_.partial(olx_toggleBlockMessInDB, id, true)
+	]);
 
-    if ($(mainElement).hasClass(class_blockedMess)) {
-        setElementUnhidden();
-    }
-    else {
-        setElementHidden();
-    }
+	if ($(mainElement).hasClass(class_blockedMess)) {
+		setElementUnhidden();
+	}
+	else {
+		setElementHidden();
+	}
 
 }
 
@@ -404,13 +404,13 @@ async function olx_buttonCloseOrOkHandler(event) {
  */
 async function olx_toggleBlockMessInDB(id, bool) {
 
-    let objWithIds = await storage.getId();
+	let objWithIds = await storage.getId();
 
-    objWithIds[id] = {
-        block: bool
-    };
+	objWithIds[id] = {
+		block: bool
+	};
 
-    await storage.setId(objWithIds);
+	await storage.setId(objWithIds);
 
 }
 
@@ -421,99 +421,99 @@ async function olx_toggleBlockMessInDB(id, bool) {
  */
 async function avito_toggleBlockMessInDB(elem, bool) {
 
-    let id = await storage.getId();
+	let id = await storage.getId();
 
-    id[elem.id] = {
-        block: bool
-    };
+	id[elem.id] = {
+		block: bool
+	};
 
-    await storage.setId(id);
+	await storage.setId(id);
 
 }
 
 async function writeNewIdInBD(newArrID) {
-    await storage.setArrID(newArrID);
+	await storage.setArrID(newArrID);
 }
 
 function avito_buttonShowHiddenHandler(event) {
-    if ($(event.currentTarget).hasClass('BSHPushed')) {
-        $(event.currentTarget).removeClass('BSHPushed');
-        $(selector_blockedMess).addClass(class_hiddenMess);
-    }
-    else {
-        $(selector_hiddenMess).removeClass(class_hiddenMess);
-        $(event.currentTarget).addClass('BSHPushed');
-    }
+	if ($(event.currentTarget).hasClass('BSHPushed')) {
+		$(event.currentTarget).removeClass('BSHPushed');
+		$(selector_blockedMess).addClass(class_hiddenMess);
+	}
+	else {
+		$(selector_hiddenMess).removeClass(class_hiddenMess);
+		$(event.currentTarget).addClass('BSHPushed');
+	}
 }
 
 function olx_buttonShowHiddenHandler(event) {
-    if ($(event.currentTarget).hasClass('BSHPushed')) {
-        $(event.currentTarget).removeClass('BSHPushed');
-        $(selector_blockedMess).closest('.wrap').addClass(class_hiddenMess);
-    }
-    else {
-        $(selector_hiddenMess).removeClass(class_hiddenMess);
-        $(event.currentTarget).addClass('BSHPushed');
-    }
+	if ($(event.currentTarget).hasClass('BSHPushed')) {
+		$(event.currentTarget).removeClass('BSHPushed');
+		$(selector_blockedMess).closest('.wrap').addClass(class_hiddenMess);
+	}
+	else {
+		$(selector_hiddenMess).removeClass(class_hiddenMess);
+		$(event.currentTarget).addClass('BSHPushed');
+	}
 }
 
 async function buttonMonitoringToggle() {
 
-    if (mode === 'nonMonitoring') {
-        mode = 'monitoring';
-        await storage.setMode(mode);
-        buttonMonitoring.addClass('isActive');
-        location.reload();
-    }
-    else {
-        mode = 'nonMonitoring';
-        clearTimeout(timerID);
-        await storage.setMode(mode);
-        buttonMonitoring.removeClass('isActive');
-    }
+	if (mode === 'nonMonitoring') {
+		mode = 'monitoring';
+		await storage.setMode(mode);
+		buttonMonitoring.addClass('isActive');
+		location.reload();
+	}
+	else {
+		mode = 'nonMonitoring';
+		clearTimeout(timerID);
+		await storage.setMode(mode);
+		buttonMonitoring.removeClass('isActive');
+	}
 
 }
 
 function mutationObserverOlx() {
 
-    let mutationObserver = new MutationObserver(function () {
+	let mutationObserver = new MutationObserver(function () {
 
-        //DOMMutationDetected = true;
-        mutationObserver.disconnect();
-        newID = [];
-        blockedMess = [];
+		//DOMMutationDetected = true;
+		mutationObserver.disconnect();
+		newID = [];
+		blockedMess = [];
 
-        setTimeout(function () {
-            start().finally();
-        }, 2000);
+		setTimeout(function () {
+			start().finally();
+		}, 2000);
 
-    });
+	});
 
-    mutationObserver.observe(document.getElementById('listContainer'), {childList: true});
+	mutationObserver.observe(document.getElementById('listContainer'), {childList: true});
 
 }
 
 function mutationObserverAvito() {
 
-    let mutationObserver = new MutationObserver(function (mutRec, mutObs) {
-        debugger;
-        console.log('ok')
-        mutationObserver.disconnect();
-        newID = [];
-        blockedMess = [];
+	let mutationObserver = new MutationObserver(function (mutRec, mutObs) {
+		debugger;
+		console.log('ok');
+		mutationObserver.disconnect();
+		newID = [];
+		blockedMess = [];
 
-        setTimeout(function () {
-            start().finally();
-        }, 2000);
+		setTimeout(function () {
+			start().finally();
+		}, 2000);
 
-    });
+	});
 
-    //let el = $('[data-marker="catalog-serp"] [data-marker="item"]')[0].parentElement
-    let el = document.getElementById('app')
-    mutationObserver.observe(el, {
-        childList: true,
-        attributes: true,
-        subtree: true
-    });
+	//let el = $('[data-marker="catalog-serp"] [data-marker="item"]')[0].parentElement
+	let el = document.getElementById('app')
+	mutationObserver.observe(el, {
+		childList: true,
+		attributes: true,
+		subtree: true
+	});
 
 }

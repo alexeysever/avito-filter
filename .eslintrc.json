@@ -15,10 +15,14 @@
     "es6": true,
     "webextensions": true,
     "browser": true,
-    "node": true
+    "node": true,
+    "mocha": true    
   },
   "parserOptions": {
     "sourceType": "module",
     "ecmaVersion": 11
-  }
+  },
+  "plugins": [
+    "Mocha"
+  ]
 }
