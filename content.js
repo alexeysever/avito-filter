@@ -1,5 +1,3 @@
-// noinspection JSValidateTypes
-
 import $ from 'jquery';
 import Extension_storage from './Storage';
 import _ from 'lodash';
@@ -88,7 +86,7 @@ async function avito_start() {
 		// Найти все объявления.
 		await avito_findAllAds();
 
-	}
+	}	
 
 }
 
@@ -180,10 +178,7 @@ async function olx_findAllAds() {
 
 async function avito_findAllAds() {
 
-	let allAds = $('[data-marker="catalog-serp"] [data-marker="item"]').on('change', function () {
-		let e = this;
-		debugger;
-	});
+	let allAds = $('[data-marker="catalog-serp"] [data-marker="item"]');
     
 	// Тут происходит преобразование набора элементов в массив с набором id.
 	let idArr = allAds.map(function () {
@@ -489,15 +484,18 @@ function mutationObserverOlx() {
 
 	});
 
-	mutationObserver.observe(document.getElementById('listContainer'), {childList: true});
+	let el = document.querySelector('#listContainer');
+	
+	if (el) {
+		mutationObserver.observe(el, {childList: true});
+	}
 
 }
 
 function mutationObserverAvito() {
 
-	let mutationObserver = new MutationObserver(function (mutRec, mutObs) {
-		debugger;
-		console.log('ok');
+	let mutationObserver = new MutationObserver(function (/* mutRec, mutObs */) {
+
 		mutationObserver.disconnect();
 		newID = [];
 		blockedMess = [];
@@ -509,11 +507,14 @@ function mutationObserverAvito() {
 	});
 
 	//let el = $('[data-marker="catalog-serp"] [data-marker="item"]')[0].parentElement
-	let el = document.getElementById('app')
-	mutationObserver.observe(el, {
-		childList: true,
-		attributes: true,
-		subtree: true
-	});
+	let el = document.querySelector('body');
+
+	if (el) {
+		mutationObserver.observe(el, {
+			childList: true,
+			attributes: true,
+			subtree: true
+		});
+	}
 
 }
