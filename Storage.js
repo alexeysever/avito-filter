@@ -1,199 +1,200 @@
 export default class Extension_storage {
 
-    constructor(siteName) {
-        this.storageInitialised = false;
-        this.siteName = siteName;
-        this.EAStorage = null;
-        this.writed = true;
+	constructor(siteName) {
+		this.storageInitialised = false;
+		this.siteName = siteName;
+		this.EAStorage = null;
+		this.writed = true;
 
-    }
+	}
 
-    async initStorage() {
+	async initStorage() {
 
-        if (this.storageInitialised) {
-            return;
-        }
+		if (this.storageInitialised) {
+			return;
+		}
 
-        let result = await this.getDataFromStorage();
+		let result = await this.getDataFromStorage();
 
-        if (result === undefined) {
+		if (result === undefined) {
 
-            // noinspection JSCheckFunctionSignatures
-            await this.setDataToStorage({
-                'EAStorage': {
+			// noinspection JSCheckFunctionSignatures
+			await this.setDataToStorage({
+				'EAStorage': {
 
-                    // Olx
-                    'olx': {
-                        'arrID': [],
-                        'id': {},
-                        'settings': {
-                            'mode': 'nonMonitoring'
-                        },
-                    },
+					// Olx
+					'olx': {
+						'arrID': [],
+						'id': {},
+						'settings': {
+							'mode': 'nonMonitoring'
+						},
+					},
 
-                    // Avito
-                    'avito': {
-                        'settings': {
-                            'mode': 'nonMonitoring'
-                        },
-                        'arrID': [],
-                        'id': {}
-                    }
+					// Avito
+					'avito': {
+						'settings': {
+							'mode': 'nonMonitoring'
+						},
+						'arrID': [],
+						'id': {}
+					}
 
-                }
-            });
+				}
+			});
 
-        }
-        else if (result.olx === undefined) {
-            await this.initOlx(result);
-        }
-        else if (!result.avito && result.arrID) {
-            await this.removeOldAvitoSettings(result);
-        }
+		}
+		else if (result.olx === undefined) {
+			await this.initOlx(result);
+		}
+		// Если нет новой схемы БД и есть старая
+		else if (!result.avito && result.arrID) {
+			await this.removeOldAvitoSettings(result);
+		}
 
-        this.storageInitialised = true;
+		this.storageInitialised = true;
 
-    }
+	}
 
-    async removeOldAvitoSettings(result) {
+	async removeOldAvitoSettings(result) {
 
-        result.avito = {
-            arrID: result.arrID,
-            id: result.id,
-            settings: result.settings
-        };
+		result.avito = {
+			arrID: result.arrID,
+			id: result.id,
+			settings: result.settings
+		};
 
-        delete result.arrID;
-        delete result.id;
-        delete result.settings;
+		delete result.arrID;
+		delete result.id;
+		delete result.settings;
 
-        await this.setDataToStorage({
-            'EAStorage': result
-        });
+		await this.setDataToStorage({
+			'EAStorage': result
+		});
 
-    }
+	}
 
-    async initOlx(result) {
+	async initOlx(result) {
 
-        result.olx = {
-            'arrID': [],
-            'id': {},
-            'settings': {
-                'mode': 'nonMonitoring'
-            },
-        };
+		result.olx = {
+			'arrID': [],
+			'id': {},
+			'settings': {
+				'mode': 'nonMonitoring'
+			},
+		};
 
-        await this.setDataToStorage({
-            'EAStorage': result
-        });
+		await this.setDataToStorage({
+			'EAStorage': result
+		});
 
-    }
+	}
 
-    getDataFromStorage(key1 = null, key2 = null) {
+	getDataFromStorage(key1 = null, key2 = null) {
 
-        let that = this;
+		//let that = this;
 
-        if (this.writed) {
+		if (this.writed) {
 
-            return new Promise(resolve => {
+			return new Promise(resolve => {
 
-                chrome.storage.local.get('EAStorage', function (result) {
+				chrome.storage.local.get('EAStorage', (result) => {
 
-                    that.EAStorage = result.EAStorage;
-                    let value = result.EAStorage;
+					this.EAStorage = result.EAStorage;
+					let value = result.EAStorage;
 
-                    if (key1) {
-                        value = value[key1];
-                    }
-                    if (key2) {
-                        value = value[key2];
-                    }
+					if (key1) {
+						value = value[key1];
+					}
+					if (key2) {
+						value = value[key2];
+					}
 
-                    that.writed = false;
+					this.writed = false;
 
-                    resolve(value);
+					resolve(value);
 
-                });
+				});
 
-            });
+			});
 
-        }
-        else {
+		}
+		else {
 
-            let value = this.EAStorage;
+			let value = this.EAStorage;
 
-            if (key1) {
-                value = value[key1];
-            }
-            if (key2) {
-                value = value[key2];
-            }
+			if (key1) {
+				value = value[key1];
+			}
+			if (key2) {
+				value = value[key2];
+			}
 
-            return value;
+			return value;
 
-        }
+		}
 
-    }
+	}
 
-    setDataToStorage(data) {
+	setDataToStorage(data) {
 
-        let that = this;
+		//let that = this;
 
-        return new Promise((resolve) => {
+		return new Promise((resolve) => {
 
-            that.writed = true;
+			this.writed = true;
 
-            // noinspection JSCheckFunctionSignatures
-            chrome.storage.local.set(data, resolve);
+			// noinspection JSCheckFunctionSignatures
+			chrome.storage.local.set(data, resolve);
 
-        });
+		});
 
-    }
+	}
 
-    async getSettings() {
-        return this.getDataFromStorage(this.siteName, 'settings');
-    }
+	async getSettings() {
+		return this.getDataFromStorage(this.siteName, 'settings');
+	}
 
-    async getMode() {
-        return (await this.getSettings()).mode;
-    }
+	async getMode() {
+		return (await this.getSettings()).mode;
+	}
 
-    async getId() {
-        return this.getDataFromStorage(this.siteName, 'id');
-    }
+	async getId() {
+		return this.getDataFromStorage(this.siteName, 'id');
+	}
 
-    async getArrID() {
-        return this.getDataFromStorage(this.siteName, 'arrID');
-    }
+	async getArrID() {
+		return this.getDataFromStorage(this.siteName, 'arrID');
+	}
 
-    async setMode(mode) {
+	async setMode(mode) {
 
-        this.EAStorage[this.siteName].settings.mode = mode;
+		this.EAStorage[this.siteName].settings.mode = mode;
 
-        await this.setDataToStorage({
-            'EAStorage': this.EAStorage
-        });
+		await this.setDataToStorage({
+			'EAStorage': this.EAStorage
+		});
 
-    }
+	}
 
-    async setId(id) {
+	async setId(id) {
 
-        this.EAStorage[this.siteName].id = id;
+		this.EAStorage[this.siteName].id = id;
 
-        await this.setDataToStorage({
-            'EAStorage': this.EAStorage
-        });
+		await this.setDataToStorage({
+			'EAStorage': this.EAStorage
+		});
 
-    }
+	}
 
-    async setArrID(arrID) {
+	async setArrID(arrID) {
 
-        this.EAStorage[this.siteName].arrID = arrID;
+		this.EAStorage[this.siteName].arrID = arrID;
 
-        await this.setDataToStorage({
-            'EAStorage': this.EAStorage
-        });
+		await this.setDataToStorage({
+			'EAStorage': this.EAStorage
+		});
 
-    }
+	}
 
 }
