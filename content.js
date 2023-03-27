@@ -1,6 +1,9 @@
 import $ from 'jquery';
 import Extension_storage from './Storage';
 import _ from 'lodash';
+import TimeCalc from './TimeHandler';
+
+let time = new TimeCalc();
 
 let svg_buttonX = $('<svg data-prefix="far" data-icon="times-circle" viewBox="0 0 512 512" height="30" width="30" xmlns="http://www.w3.org/2000/svg"> <path d="M256 456c-113.4937 0-200-92.0317-200-200S143.307 56 256 56s200 92.5055 200 200-86.5063 200-200 200z" class="in-circle" fill="none" stroke-width=".6321"/> <path fill="green" d="M256 8C119 8 8 119 8 256s111 248 248 248 248-111 248-248S393 8 256 8zm0 448c-110.5 0-200-89.5-200-200S145.5 56 256 56s200 89.5 200 200-89.5 200-200 200zm101.8-262.2L295.6 256l62.2 62.2c4.7 4.7 4.7 12.3 0 17l-22.6 22.6c-4.7 4.7-12.3 4.7-17 0L256 295.6l-62.2 62.2c-4.7 4.7-12.3 4.7-17 0l-22.6-22.6c-4.7-4.7-4.7-12.3 0-17l62.2-62.2-62.2-62.2c-4.7-4.7-4.7-12.3 0-17l22.6-22.6c4.7-4.7 12.3-4.7 17 0l62.2 62.2 62.2-62.2c4.7-4.7 12.3-4.7 17 0l22.6 22.6c4.7 4.7 4.7 12.3 0 17z" class="out-circle"/></svg>')
 	.hover(function () {
@@ -44,7 +47,9 @@ let mode,
 	class_blockedMess,
 	class_hiddenMess,
 	selector_hiddenMess,
-	class_hiddenAndBlockedMess;
+	class_hiddenAndBlockedMess,
+	selector_allAds,
+	selector_EAButton;
 
 let buttonArrows,
 	buttonClose,
@@ -143,6 +148,8 @@ function avito_setButtonsSettings() {
 	selector_newMess     = '.avt_EANewMess';
 	selector_hiddenMess  = '.avt_EAHiddenMess';
 	selector_blockedMess = '.avt_EABlockedMess';
+	selector_allAds = '[data-marker="catalog-serp"] [data-marker="item"]';
+	selector_EAButton = '.avt_EAButton';
 
 	buttonsInit();
 	buttonClose.addClass(class_buttonClose).on('click', avito_buttonCloseOrOkHandler);
@@ -178,7 +185,7 @@ async function olx_findAllAds() {
 
 async function avito_findAllAds() {
 
-	let allAds = $('[data-marker="catalog-serp"] [data-marker="item"]');
+	let allAds = $(selector_allAds);
     
 	// Тут происходит преобразование набора элементов в массив с набором id.
 	let idArr = allAds.map(function () {
@@ -187,11 +194,11 @@ async function avito_findAllAds() {
 
 	let vipAds = $('.serp-vips [data-marker="item"]').add('[class*="items-vip-"] [data-marker="item"]');
 	let witcherAds = $('[class*="items-witcher-"] [data-marker="item"]');
-	let listAds = allAds.not(vipAds).not(witcherAds);
+	let onlyNeededAds = allAds.not(vipAds).not(witcherAds);
 
-	if (listAds.length > 0) {
+	if (onlyNeededAds.length > 0) {
 
-		addButtons(listAds);
+		addButtons(onlyNeededAds);
 
 		let newId = await findIdInBase(idArr);
 
@@ -200,9 +207,11 @@ async function avito_findAllAds() {
 		await monitoring();
 		avito_hideBlockedMess(blockedMess);
 
+		checkIfProgAvitoCrash();
+
 	}
 
-	mutationObserverAvito();
+	//mutationObserverAvito();
 
 }
 
@@ -492,29 +501,57 @@ function mutationObserverOlx() {
 
 }
 
-function mutationObserverAvito() {
+// function mutationObserverAvito() {
 
-	let mutationObserver = new MutationObserver(function (/* mutRec, mutObs */) {
+// 	let mutationObserver = new MutationObserver(function (/* mutRec, mutObs */) {
 
-		mutationObserver.disconnect();
-		newID = [];
-		blockedMess = [];
+// 		mutationObserver.disconnect();
+// 		newID = [];
+// 		blockedMess = [];
 
-		setTimeout(function () {
-			start().finally();
-		}, 2000);
+// 		setTimeout(function () {
+// 			start().finally();
+// 		}, 2000);
 
-	});
+// 	});
 
-	//let el = $('[data-marker="catalog-serp"] [data-marker="item"]')[0].parentElement
-	let el = document.querySelector('body');
+// 	//let el = $('[data-marker="catalog-serp"] [data-marker="item"]')[0].parentElement
+// 	let el = document.querySelector('body');
 
-	if (el) {
-		mutationObserver.observe(el, {
-			childList: true,
-			attributes: true,
-			subtree: true
-		});
+// 	if (el) {
+// 		mutationObserver.observe(el, {
+// 			childList: true,
+// 			attributes: true,
+// 			subtree: true
+// 		});
+// 	}
+
+// }
+
+function checkIfProgAvitoCrash() {
+	
+	let buttons = $(`${selector_allAds} ${selector_EAButton}`);
+	
+	if (buttons.length > 0) {
+		newTimeout(true, checkIfProgAvitoCrash);
 	}
+	else {
+		restartAvitoExtension();
+	}
+
+}
+
+function restartAvitoExtension() {
+	$(menu).remove();
+	avito_start();
+}
+
+function newTimeout(bool, callback) {
+	
+	let ms = time.increaseTime(bool).milliseconds();
+	
+	setTimeout(() => {
+		callback();
+	}, ms);
 
 }
