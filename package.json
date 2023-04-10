@@ -20,7 +20,7 @@
   },
   "homepage": "https://github.com/alexeysever/avito-filter#readme",
   "dependencies": {
-    "jquery": "^3.6.0",
+    "jquery": "^3.6.4",
     "lodash": "^4.17.21"
   },
   "devDependencies": {
