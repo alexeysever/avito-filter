@@ -1,12 +1,8 @@
 {
-  "manifest_version": 3,
-  "name": "Avito фильтр (+OLX)",
-  "description": "Это расширение позволяет фильтровать уже просмотренные или ненужные объявления на сайтах объявлений avito.ru и olx.ua.",
-  "version": "1.2.3",
-  "host_permissions": [
-    "*://www.avito.ru/*",
-    "*://www.olx.ua/*"
-  ],
+  "manifest_version": 2,
+  "name": "Avito фильтр",
+  "description": "Это расширение позволяет фильтровать уже просмотренные или ненужные объявления и сообщать о новых на сайте объявлений avito.ru.",
+  "version": "1.2.2",
   "content_scripts": [
     {
       "matches": [
@@ -27,7 +23,7 @@
     "48": "icon48.png",
     "128": "icon128.png"
   },
-  "action": {
+  "browser_action": {
     "default_icon": "icon128.png"
   },
   "permissions": [
@@ -35,17 +31,11 @@
     "unlimitedStorage"
   ],
   "web_accessible_resources": [
-    {
-      "resources": [
-        "content.js",
-        "content.css",
-        "melody.mp3"
-      ],
-      "matches": [
-        "*://www.avito.ru/*",
-        "*://www.olx.ua/*" 
-      ],
-      "use_dynamic_url": true
-    }
-  ]
+    "melody.mp3"
+  ],
+  "background": {
+    "scripts": [
+      "background.js"
+    ]
+  }
 }
