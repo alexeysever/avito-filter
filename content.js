@@ -148,7 +148,7 @@ function avito_setButtonsSettings() {
 	selector_newMess     = '.avt_EANewMess';
 	selector_hiddenMess  = '.avt_EAHiddenMess';
 	selector_blockedMess = '.avt_EABlockedMess';
-	selector_allAds = '[data-marker="catalog-serp"] [data-marker="item"]';
+	selector_allAds = '[class^="items-items"] [data-marker="item"]';
 	selector_EAButton = '.avt_EAButton';
 
 	buttonsInit();
