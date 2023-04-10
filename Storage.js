@@ -1,6 +1,8 @@
 export default class Extension_storage {
 
-	constructor(siteName) {
+	constructor(siteName, storage = chrome.storage) {
+
+		this.chromeStorage = storage;
 		this.storageInitialised = false;
 		this.siteName = siteName;
 		this.EAStorage = null;
@@ -140,7 +142,7 @@ export default class Extension_storage {
 
 		//let that = this;
 
-		return new Promise((resolve) => {
+		return new Promise(resolve => {
 
 			this.writed = true;
 
